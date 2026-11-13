@@ -63,7 +63,6 @@ public final class Paleness {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB =
         TABS.register("paleness", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.paleness"))
-            .withTabsBefore(CreativeModeTabs.REDSTONE)
             .icon(() -> new ItemStack(SHARD.get()))
             .displayItems((parameters, output) -> {
                 output.accept(ANALYZER_ITEM.get());
@@ -78,7 +77,6 @@ public final class Paleness {
         MENUS.register(bus);
         COMPONENTS.register(bus);
         TABS.register(bus);
-        bus.addListener(ClientRegistration::registerScreens);
     }
 
     public static final class ShardItem extends Item {

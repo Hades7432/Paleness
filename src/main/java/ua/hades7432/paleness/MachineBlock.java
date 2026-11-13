@@ -8,7 +8,8 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -17,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.BlockHitResult;
 
-public final class MachineBlock extends BaseEntityBlock {
+public final class MachineBlock extends Block implements EntityBlock {
     private final boolean analyzer;
     public MachineBlock(boolean analyzer, BlockBehaviour.Properties properties) {
         super(properties);
@@ -44,7 +45,8 @@ public final class MachineBlock extends BaseEntityBlock {
     @Nullable @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         if (level.isClientSide) return null;
-        return createTickerHelper(type, analyzer ? Paleness.ANALYZER_BE.get() : Paleness.CONDENSER_BE.get(), MachineEntity::tick);
+        if (type != (analyzer ? Paleness.ANALYZER_BE.get() : Paleness.CONDENSER_BE.get())) return null;
+        return (world, blockPos, blockState, blockEntity) -> MachineEntity.tick(world, blockPos, blockState, (MachineEntity) blockEntity);
     }
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
