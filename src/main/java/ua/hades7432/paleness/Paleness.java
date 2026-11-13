@@ -70,19 +70,26 @@ public final class Paleness {
                 output.accept(ANALYZER_ITEM.get());
                 output.accept(CONDENSER_ITEM.get());
                 output.accept(SHARD.get());
+                output.accept(PaleContent.INFUSER_ITEM.get());
+                output.accept(PaleContent.SUPER_QUARTZ_ITEM.get());
+                output.accept(PaleContent.SUPER_CRYSTAL.get());
             }).build());
 
     public Paleness(IEventBus bus) {
+        PaleContent.init();
         BLOCKS.register(bus);
         ITEMS.register(bus);
         BLOCK_ENTITIES.register(bus);
         MENUS.register(bus);
         COMPONENTS.register(bus);
         TABS.register(bus);
+        PaleContent.RECIPES.register(bus);
         bus.addListener(this::registerCapabilities);
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, PaleContent.INFUSER_BE.get(),
+                (entity, side) -> entity.inventory);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ANALYZER_BE.get(),
                 (entity, side) -> entity.inventory);
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CONDENSER_BE.get(),

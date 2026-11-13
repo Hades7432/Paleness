@@ -9,5 +9,14 @@
   "screen.paleness.condensing": "Condensing...",
   "screen.paleness.insert": "Insert a sample",
   "screen.paleness.insert_four": "Fill four inputs",
-  "tooltip.paleness.value": "Paleness: %s"
+  "tooltip.paleness.value": "Paleness: %s",
+  "block.paleness.paleness_infuser": "Paleness Infuser",
+  "block.paleness.super_pale_quartz": "Super-Pale Quartz Block",
+  "block.paleness.paleness_portal": "Paleness Portal",
+  "item.paleness.super_pale_crystal": "Super-Pale Crystal",
+  "screen.paleness.infuse": "Infuse Paleness",
+  "screen.paleness.infusing": "Infusing...",
+  "screen.paleness.infuser_prompt": "Shard + quartz block",
+  "tooltip.paleness.super_crystal": "Single-use portal igniter",
+  "biome.paleness.stone_wastes": "Stone Wastes"
 }

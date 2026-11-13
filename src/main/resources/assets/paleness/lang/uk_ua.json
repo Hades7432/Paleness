@@ -9,5 +9,14 @@
   "screen.paleness.condensing": "Конденсація...",
   "screen.paleness.insert": "Покладіть зразок",
   "screen.paleness.insert_four": "Заповніть 4 слоти",
-  "tooltip.paleness.value": "Рівень блідності: %s"
+  "tooltip.paleness.value": "Рівень блідності: %s",
+  "block.paleness.paleness_infuser": "Обліднювач",
+  "block.paleness.super_pale_quartz": "Супер-блідний кварцовий блок",
+  "block.paleness.paleness_portal": "Портал Блідності",
+  "item.paleness.super_pale_crystal": "Супер-блідний кристал",
+  "screen.paleness.infuse": "Наповнити Блідністю",
+  "screen.paleness.infusing": "Насичення...",
+  "screen.paleness.infuser_prompt": "Кристал + кварцовий блок",
+  "tooltip.paleness.super_crystal": "Одноразово активує портал",
+  "biome.paleness.stone_wastes": "Кам'яна пустка Блідності"
 }

@@ -9,5 +9,14 @@
   "screen.paleness.condensing": "Конденсация...",
   "screen.paleness.insert": "Поместите образец",
   "screen.paleness.insert_four": "Заполните 4 слота",
-  "tooltip.paleness.value": "Уровень бледности: %s"
+  "tooltip.paleness.value": "Уровень бледности: %s",
+  "block.paleness.paleness_infuser": "Обледнитель",
+  "block.paleness.super_pale_quartz": "Супер-бледный кварцевый блок",
+  "block.paleness.paleness_portal": "Портал Бледности",
+  "item.paleness.super_pale_crystal": "Супер-бледный кристалл",
+  "screen.paleness.infuse": "Наполнить Бледностью",
+  "screen.paleness.infusing": "Насыщение...",
+  "screen.paleness.infuser_prompt": "Кристалл + кварцевый блок",
+  "tooltip.paleness.super_crystal": "Одноразово активирует портал",
+  "biome.paleness.stone_wastes": "Каменная пустошь Бледности"
 }

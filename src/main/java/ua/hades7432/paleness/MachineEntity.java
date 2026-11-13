@@ -65,7 +65,12 @@ public final class MachineEntity extends BlockEntity implements MenuProvider {
             if (inventory.getStackInSlot(0).isEmpty()) return false;
         } else {
             if (!inventory.getStackInSlot(4).isEmpty()) return false;
-            for (int i=0; i<4; i++) if (inventory.getStackInSlot(i).isEmpty()) return false;
+            for (int i=0; i<4; i++) {
+                ItemStack input=inventory.getStackInSlot(i);
+                if(input.isEmpty() || input.is(PaleContent.SUPER_CRYSTAL.get())
+                    || input.is(PaleContent.SUPER_QUARTZ_ITEM.get())
+                    || input.has(PaleContent.INFUSED.get())) return false;
+            }
             int sum = 0;
             for (int i=0; i<4; i++) sum += PalenessValues.calculate(inventory.getStackInSlot(i));
             if (sum <= 0) return false;

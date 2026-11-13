@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "QGQ",
+    "SAS",
+    "QGQ"
+  ],
+  "key": {
+    "Q": "minecraft:quartz",
+    "G": "minecraft:gold_ingot",
+    "S": "paleness:paleness_shard",
+    "A": "paleness:paleness_analyzer"
+  },
+  "result": {
+    "id": "paleness:paleness_infuser",
+    "count": 1
+  }
+}

@@ -15,6 +15,7 @@ public final class ClientRegistration {
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(Paleness.MACHINE_MENU.get(), MachineScreen::new);
+        event.register(PaleContent.INFUSER_MENU.get(), InfuserScreen::new);
     }
 
     @SubscribeEvent

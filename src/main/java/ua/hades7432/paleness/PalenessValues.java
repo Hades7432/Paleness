@@ -32,6 +32,10 @@ public final class PalenessValues {
     }
     public static int calculate(ItemStack stack) {
         if (stack.isEmpty()) return 0;
+        if (stack.is(PaleContent.SUPER_CRYSTAL.get())) return 2000;
+        if (stack.is(PaleContent.SUPER_QUARTZ_ITEM.get())) return 2001;
+        if (stack.is(net.minecraft.world.item.Items.QUARTZ_BLOCK))
+            return baseQuartz() + stack.getOrDefault(PaleContent.INFUSED.get(),0);
         if (stack.is(Paleness.SHARD.get()))
             return stack.getOrDefault(Paleness.PALENESS_VALUE.get(), 0);
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
@@ -41,6 +45,9 @@ public final class PalenessValues {
         Integer baked = VANILLA_INDEX.get(id.toString());
         if (baked != null) return baked;
         return CACHE.computeIfAbsent(id, key -> compute(key,stack.getItem() instanceof BlockItem));
+    }
+    public static int baseQuartz() {
+        return VANILLA_INDEX.getOrDefault("minecraft:quartz_block", 920);
     }
     private static int compute(ResourceLocation id, boolean isBlock) {
         for (String path : new String[] {
