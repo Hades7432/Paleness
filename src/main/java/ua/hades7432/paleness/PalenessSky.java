@@ -12,7 +12,7 @@ import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 public final class PalenessSky {
     @SubscribeEvent public static void register(RegisterDimensionSpecialEffectsEvent event){
         event.register(ResourceLocation.fromNamespaceAndPath(Paleness.ID,"paleness"),
-            new DimensionSpecialEffects(Float.NaN,true,SkyType.NONE,true,true){
+            new DimensionSpecialEffects(Float.NaN,true,DimensionSpecialEffects.SkyType.NONE,true,true){
                 @Override public Vec3 getBrightnessDependentFogColor(Vec3 fog,float brightness){
                     return new Vec3(.84,.84,.86);
                 }
