@@ -1,27 +1,26 @@
-# Paleness — 0.1.0-alpha
+# Paleness — 0.2.0-alpha
 
-Minecraft **1.21.1** · **NeoForge >=21.1.219** · Java 21 · optional Create **6.0.10**.
+Minecraft **1.21.1**, **NeoForge 21.1.x**, Java 21. Compatible with Create 6.0.10 for item logistics.
 
-Initial functional prototype for the approved [concept art](https://github.com/Hades7432/Paleness). The designs are *inspired by* the reference, not yet pixel-perfect. The images are concept art, not actual game screenshots.
+## Features implemented in the Java sources
 
-## In game
-- **Paleness Analyzer**: one inventory slot, Assess Paleness, 80-tick scan, non-destructive result.
-- **Paleness Condenser**: four input slots, central output, 100-tick operation, consumes one item from each input, outputs one shard with a data-component value equal to their sum (up to 100000).
-- **Sculk**: all vanilla sculk items/blocks have negative Paleness; pure sculk cannot yield a Paleness shard.
-- **Texture scanning**: uses pixels from an available canonical PNG in a mod JAR, otherwise deterministic vanilla fallback values. Does not inspect installed resource packs.
-- **Crafting**: Analyzer: iron corners, polished andesite edge centers, gold center; Condenser: polished andesite corners, iron top/bottom, diamonds left/right, quartz block center.
-- UA/EN/RU translations; dedicated-server game logic.
+- **Paleness Analyzer:** one input, 4-second scan without consuming the item, status/result GUI.
+- **Paleness Condenser:** four ingredient slots, 5-second condensation, one data-bearing Paleness Shard.
+- **Paleness** based on canonical texture-pixel whiteness index, with special negative values for sculk.
+- **Five machine animation phases:** `MachineBlock.PHASE = 0..4` advances during operation, changing in-world block models.
+- Machines face the player on placement, change emitted light level during operation, and preserve their inventories.
+- **Five shard tiers:** item model overrides at 0.2, 0.4, 0.6 and 0.8 based on `paleness_value / 4000`.
+- Ukrainian, Russian and English translations, creative tab, recipes, basic Create item capability interop.
+- Analyzer progress bar no longer obscures the status label.
 
-## Build
-GitHub Actions builds the actual JAR on push. Download from the successful workflow's **Artifacts** section. Local: `gradle build` with JDK 21.
+## Visual assets — important
 
-## Known limitations (transparent)
-- No in-game runtime test was possible in the authoring environment; CI compilation must succeed before installing.
-- Dedicated vanilla servers may omit client textures; curated default values are used for them.
-- The 3D shapes, white emissive aesthetic and GUI are a first pass; post-build screenshots are needed for visual refinement.
-- Create is optional; advanced native Create kinetics/animations are not yet implemented.
+The **complete 0.2.0-alpha JAR** distributed through the conversation contains the approved v0.2 model/texture pack. **This GitHub source branch currently includes the Java integration but does not yet include the 0.2 binary visuals themselves**, because they were authored as a separate package. Therefore, **do not use the GitHub Actions artifact alone as the complete visual release**.
 
-Design target: the Ukrainian concept board chosen by the user.
+To rebuild the visually complete release from this repository, first extract the separately distributed `Paleness-v0.2.0-Source-Assets.zip` into the repository root (the ZIP has `src/main/resources/assets/...` and `art/...`). Then run `gradle build` with JDK 21.
 
-### Canonical texture-index generation
-The build workflow fetches Minecraft 1.21.1 client assets and generates a compact numeric index from texture pixels (no Minecraft artwork redistributed). For a local equivalent, run `python tools/generate_index.py` with Pillow installed. Mod textures are scanned at runtime when accessible from their JAR; unknown items use a fallback until a more advanced model-resolution system is added.
+## Notes
+
+Visual phases are **discrete** model changes; they are not smooth skeletal animation or shader-based bloom. The source model assets are editable in Blockbench. In-game Minecraft client testing is still required after CI compilation. Create kinetics and advanced moving contraption support are not yet implemented.
+
+The recommended test is: replace the old 0.1 mod JAR with the distributed 0.2 JAR, place each machine, scan an item, then condense four ingredients into a shard. Check the five model phases and shard tier differences.
