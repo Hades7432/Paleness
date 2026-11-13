@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="All Rights Reserved"
+[[mods]]
+modId="paleness"
+version="0.1.0-alpha"
+displayName="Paleness"
+authors="Hades7432"
+description='''Paleness: a luminous white techno-magical science.'''
+[[dependencies.paleness]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"
+[[dependencies.paleness]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.219,)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.paleness]]
+modId="create"
+type="optional"
+versionRange="[6.0.10,)"
+ordering="NONE"
+side="BOTH"

@@ -1,0 +1,13 @@
+{
+  "itemGroup.paleness": "Paleness",
+  "block.paleness.paleness_analyzer": "Paleness Analyzer",
+  "block.paleness.paleness_condenser": "Paleness Condenser",
+  "item.paleness.paleness_shard": "Paleness Shard",
+  "screen.paleness.analyze": "Assess Paleness",
+  "screen.paleness.start": "Start",
+  "screen.paleness.scanning": "Scanning...",
+  "screen.paleness.condensing": "Condensing...",
+  "screen.paleness.insert": "Insert a sample",
+  "screen.paleness.insert_four": "Fill four inputs",
+  "tooltip.paleness.value": "Paleness: %s"
+}

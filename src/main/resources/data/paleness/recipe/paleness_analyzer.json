@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ISI",
+    "SGS",
+    "ISI"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "S": "minecraft:polished_andesite",
+    "G": "minecraft:gold_ingot"
+  },
+  "result": {
+    "id": "paleness:paleness_analyzer",
+    "count": 1
+  }
+}

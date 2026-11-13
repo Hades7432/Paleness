@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "paleness:paleness_analyzer",
+    "paleness:paleness_condenser"
+  ]
+}

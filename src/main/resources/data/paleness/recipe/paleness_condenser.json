@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SIS",
+    "DQD",
+    "SIS"
+  ],
+  "key": {
+    "S": "minecraft:polished_andesite",
+    "I": "minecraft:iron_ingot",
+    "D": "minecraft:diamond",
+    "Q": "minecraft:quartz_block"
+  },
+  "result": {
+    "id": "paleness:paleness_condenser",
+    "count": 1
+  }
+}
