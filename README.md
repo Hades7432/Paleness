@@ -22,3 +22,6 @@ GitHub Actions builds the actual JAR on push. Download from the successful workf
 - Create is optional; advanced native Create kinetics/animations are not yet implemented.
 
 Design target: the Ukrainian concept board chosen by the user.
+
+### Canonical texture-index generation
+The build workflow fetches Minecraft 1.21.1 client assets and generates a compact numeric index from texture pixels (no Minecraft artwork redistributed). For a local equivalent, run `python tools/generate_index.py` with Pillow installed. Mod textures are scanned at runtime when accessible from their JAR; unknown items use a fallback until a more advanced model-resolution system is added.

@@ -2,6 +2,10 @@ package ua.hades7432.paleness;
 
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.imageio.ImageIO;
@@ -13,6 +17,16 @@ import net.minecraft.world.item.ItemStack;
 public final class PalenessValues {
     private PalenessValues() {}
     private static final Map<ResourceLocation,Integer> CACHE = new ConcurrentHashMap<>();
+    private static final Map<String,Integer> VANILLA_INDEX = loadIndex();
+    private static Map<String,Integer> loadIndex() {
+        Map<String,Integer> values = new ConcurrentHashMap<>();
+        try (InputStream stream = PalenessValues.class.getResourceAsStream("/assets/paleness/paleness_index.json")) {
+            if (stream == null) return values;
+            JsonObject obj = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
+            obj.entrySet().forEach(e -> values.put(e.getKey(), e.getValue().getAsInt()));
+        } catch (Exception ignored) { }
+        return values;
+    }
     public static String format(int value) {
         return String.format(java.util.Locale.ROOT, "%+.3f", value / 1000.0);
     }
@@ -22,8 +36,10 @@ public final class PalenessValues {
             return stack.getOrDefault(Paleness.PALENESS_VALUE.get(), 0);
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         // The ONLY negative family: sculk blocks and related items.
-        if (id.getNamespace().equals("minecraft") && id.getPath().startsWith("sculk"))
+        if (id.getNamespace().equals("minecraft") && (id.getPath().startsWith("sculk") || id.getPath().equals("calibrated_sculk_sensor")))
             return id.getPath().equals("sculk") ? -900 : -750;
+        Integer baked = VANILLA_INDEX.get(id.toString());
+        if (baked != null) return baked;
         return CACHE.computeIfAbsent(id, key -> compute(key,stack.getItem() instanceof BlockItem));
     }
     private static int compute(ResourceLocation id, boolean isBlock) {
