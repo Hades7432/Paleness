@@ -40,8 +40,10 @@ public final class MachineScreen extends AbstractContainerScreen<MachineMenu> {
             panel(g,x+66,y+38,45,35,WINDOW);
             panel(g,x+12,y+18,150,16,0xFF49443E);
             if(menu.state()==1) {
-                int width=menu.progress()*144/80;
-                g.fill(x+15,y+22,x+15+width,y+28,WHITE);
+                // Keep the loading bar beside the sample slot, never over the scanning label.
+                panel(g, x+14, y+51, 47, 15, WINDOW);
+                int width=Math.min(41,menu.progress()*41/80);
+                g.fill(x+17,y+56,x+17+width,y+61,WHITE);
             }
         } else {
             for(int[] p:new int[][] {{48,31},{110,31},{48,80},{110,80}}) {

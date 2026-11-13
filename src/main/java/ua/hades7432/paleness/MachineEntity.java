@@ -18,7 +18,14 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 public final class MachineEntity extends BlockEntity implements MenuProvider {
     public final boolean analyzer;
     public final ItemStackHandler inventory = new ItemStackHandler(5) {
-        @Override protected void onContentsChanged(int slot) { MachineEntity.this.setChanged(); }
+        @Override protected void onContentsChanged(int slot) {
+            if (level != null && progress == 0 && state == 2 && (analyzer ? slot == 0 : slot == 4)) {
+                state = 0;
+                outputValue = 0;
+                updatePhase(0);
+            }
+            MachineEntity.this.setChanged();
+        }
         @Override public boolean isItemValid(int slot, ItemStack stack) {
             return analyzer ? slot == 0 : slot < 4;
         }
@@ -67,8 +74,16 @@ public final class MachineEntity extends BlockEntity implements MenuProvider {
         outputValue = 0;
         state = 1;
         progress = 1;
+        updatePhase(1);
         setChanged();
         return true;
+    }
+
+    private void updatePhase(int target) {
+        if (level == null || level.isClientSide) return;
+        BlockState blockState = level.getBlockState(worldPosition);
+        if (blockState.getBlock() instanceof MachineBlock && blockState.getValue(MachineBlock.PHASE) != target)
+            level.setBlock(worldPosition, blockState.setValue(MachineBlock.PHASE, target), 3);
     }
 
     private int fingerprint() {
@@ -87,11 +102,14 @@ public final class MachineEntity extends BlockEntity implements MenuProvider {
         if (machine.inputFingerprint != machine.fingerprint()) {
             machine.progress=0;
             machine.state=0;
+            machine.updatePhase(0);
             machine.setChanged();
             return;
         }
         int time = machine.analyzer ? 80 : 100;
         if (++machine.progress < time) {
+            int nextPhase = Math.min(3, 1 + machine.progress * 3 / time);
+            machine.updatePhase(nextPhase);
             machine.setChanged();
             return;
         }
@@ -110,6 +128,7 @@ public final class MachineEntity extends BlockEntity implements MenuProvider {
         }
         machine.progress=0;
         machine.state=2;
+        machine.updatePhase(4);
         machine.setChanged();
     }
 

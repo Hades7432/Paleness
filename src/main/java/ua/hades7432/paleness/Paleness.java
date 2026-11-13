@@ -44,9 +44,9 @@ public final class Paleness {
             builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 
     public static final DeferredBlock<MachineBlock> ANALYZER =
-        BLOCKS.register("paleness_analyzer", () -> new MachineBlock(true, BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5f).lightLevel(state -> 6).requiresCorrectToolForDrops().noOcclusion()));
+        BLOCKS.register("paleness_analyzer", () -> new MachineBlock(true, BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5f).lightLevel(state -> state.getValue(MachineBlock.PHASE) == 0 ? 2 : 7 + state.getValue(MachineBlock.PHASE)).requiresCorrectToolForDrops().noOcclusion()));
     public static final DeferredBlock<MachineBlock> CONDENSER =
-        BLOCKS.register("paleness_condenser", () -> new MachineBlock(false, BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(4.5f).lightLevel(state -> 10).requiresCorrectToolForDrops().noOcclusion()));
+        BLOCKS.register("paleness_condenser", () -> new MachineBlock(false, BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(4.5f).lightLevel(state -> state.getValue(MachineBlock.PHASE) == 0 ? 3 : Math.min(15, 8 + state.getValue(MachineBlock.PHASE))).requiresCorrectToolForDrops().noOcclusion()));
     public static final DeferredItem<BlockItem> ANALYZER_ITEM = ITEMS.registerSimpleBlockItem("paleness_analyzer", ANALYZER);
     public static final DeferredItem<BlockItem> CONDENSER_ITEM = ITEMS.registerSimpleBlockItem("paleness_condenser", CONDENSER);
     public static final DeferredItem<Item> SHARD =
