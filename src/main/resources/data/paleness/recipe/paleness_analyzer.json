@@ -6,9 +6,15 @@
     "ISI"
   ],
   "key": {
-    "I": "minecraft:iron_ingot",
-    "S": "minecraft:polished_andesite",
-    "G": "minecraft:gold_ingot"
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "minecraft:polished_andesite"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    }
   },
   "result": {
     "id": "paleness:paleness_analyzer",

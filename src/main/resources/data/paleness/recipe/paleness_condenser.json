@@ -6,10 +6,18 @@
     "SIS"
   ],
   "key": {
-    "S": "minecraft:polished_andesite",
-    "I": "minecraft:iron_ingot",
-    "D": "minecraft:diamond",
-    "Q": "minecraft:quartz_block"
+    "S": {
+      "item": "minecraft:polished_andesite"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "Q": {
+      "item": "minecraft:quartz_block"
+    }
   },
   "result": {
     "id": "paleness:paleness_condenser",

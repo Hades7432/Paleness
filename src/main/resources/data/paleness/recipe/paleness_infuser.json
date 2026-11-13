@@ -7,10 +7,18 @@
     "QGQ"
   ],
   "key": {
-    "Q": "minecraft:quartz",
-    "G": "minecraft:gold_ingot",
-    "S": "paleness:paleness_shard",
-    "A": "paleness:paleness_analyzer"
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "S": {
+      "item": "paleness:paleness_shard"
+    },
+    "A": {
+      "item": "paleness:paleness_analyzer"
+    }
   },
   "result": {
     "id": "paleness:paleness_infuser",

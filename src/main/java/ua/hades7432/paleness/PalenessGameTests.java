@@ -11,7 +11,7 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 public final class PalenessGameTests {
     @GameTest(template="empty",timeoutTicks=150)
     public static void verifyWorldAndRecipes(GameTestHelper h) {
-        h.assertTrue(h.getLevel().getServer().getLevel(PalePortalLogic.DIMENSION)!=null,
+        h.assertTrue(h.getLevel().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.LEVEL_STEM).containsKey(\n            ResourceLocation.fromNamespaceAndPath(Paleness.ID,"paleness")),
             "The Paleness dimension was not registered");
         for(String id: new String[]{"paleness_analyzer","paleness_condenser",
                 "paleness_infuser","super_pale_crystal"}) {
