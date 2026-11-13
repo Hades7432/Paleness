@@ -19,6 +19,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -77,6 +79,14 @@ public final class Paleness {
         MENUS.register(bus);
         COMPONENTS.register(bus);
         TABS.register(bus);
+        bus.addListener(this::registerCapabilities);
+    }
+
+    private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ANALYZER_BE.get(),
+                (entity, side) -> entity.inventory);
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CONDENSER_BE.get(),
+                (entity, side) -> entity.inventory);
     }
 
     public static final class ShardItem extends Item {
