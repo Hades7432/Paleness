@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 public final class InfuserScreen extends AbstractContainerScreen<InfuserMenu> {
     public InfuserScreen(InfuserMenu m,Inventory inv,Component name){
         super(m,inv,name);
-        imageWidth=176;imageHeight=212;inventoryLabelY=118;
+        imageWidth=176;imageHeight=212;inventoryLabelY=113;
     }
     @Override protected void init(){
         super.init();
@@ -47,7 +47,7 @@ public final class InfuserScreen extends AbstractContainerScreen<InfuserMenu> {
     }
     @Override protected void renderLabels(GuiGraphics g,int mx,int my){
         g.drawString(font,title,9,6,0xFFF5F5F5,false);
-        g.drawString(font,Component.translatable("container.inventory"),8,119,0xFF373337,false);
+        g.drawString(font,Component.translatable("container.inventory"),8,113,0xFF373337,false);
         Component status=menu.phase()==1
             ? Component.translatable("screen.paleness.infusing")
             : menu.phase()==2 ? Component.translatable("tooltip.paleness.value",
