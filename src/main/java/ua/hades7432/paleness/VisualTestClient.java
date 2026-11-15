@@ -41,22 +41,34 @@ public final class VisualTestClient {
             server.execute(() -> prepare(server, uuid));
         }
         if (!constructed) return;
-        if (!capture1 && ticks >= 48) {
-            capture1 = true;
-            shot(mc, "paleness-gallery.png");
-        }
-        if (!capture2 && ticks >= 72) {
-            capture2 = true;
+        // Capture the gallery, a close-up, active machinery and the real GUI
+        // before the runtime-test mod closes its short-lived single-player world.
+        if (ticks == 33) shot(mc, "paleness-gallery.png");
+        if (ticks == 40) moveCamera(mc, -5, 4.2);
+        if (ticks == 49) shot(mc, "paleness-analyzer-idle.png");
+        if (ticks == 54) {
             MinecraftServer server = mc.getSingleplayerServer();
             if (server != null && base != null) server.execute(() -> activate(server));
         }
-        if (capture2 && !capture3 && ticks >= 95) {
-            capture3 = true;
-            shot(mc, "paleness-working.png");
+        if (ticks == 65) shot(mc, "paleness-analyzer-working.png");
+        if (ticks == 70) {
             MinecraftServer server = mc.getSingleplayerServer();
             if (server != null && base != null) server.execute(() -> openAnalyzer(server, mc.player.getUUID()));
         }
-        if (ticks == 122) shot(mc, "paleness-analyzer-gui.png");
+        if (ticks == 81) shot(mc, "paleness-analyzer-gui.png");
+
+    }
+
+    private static void moveCamera(Minecraft mc, int offsetX, double zDistance) {
+        MinecraftServer server = mc.getSingleplayerServer();
+        if (server == null || base == null || mc.player == null) return;
+        UUID uuid = mc.player.getUUID();
+        server.execute(() -> {
+            ServerPlayer player = server.getPlayerList().getPlayer(uuid);
+            if (player != null)
+                player.connection.teleport(base.getX()+offsetX+0.5,
+                        base.getY()+2.0,base.getZ()+zDistance,180f,12f);
+        });
     }
 
     private static void shot(Minecraft mc, String name) {

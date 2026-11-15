@@ -5,8 +5,9 @@ on:
     branches: [main]
     paths:
       - 'src/main/**'
-      - 'src/generated/**'
-      - 'tools/generate_index.py'
+      - 'ci/**'
+      - 'tools/prepare_visual_assets.py'
+      - 'tools/review_visual_lab.py'
       - '.github/workflows/visual-lab.yml'
       - 'build.gradle'
 jobs:
@@ -24,28 +25,32 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.14.3'
-      - name: Build Paleness with real texture index
+      - name: Restore approved artistic resources
+        run: python tools/prepare_visual_assets.py
+      - name: Build Paleness with real textures
         run: |
           python -m pip install --disable-pip-version-check pillow
           python tools/generate_index.py
           gradle --no-daemon build
-      - name: Stage mod for NeoForge
+      - name: Stage Paleness in NeoForge
         run: |
           mkdir -p run/mods
           cp build/libs/paleness-*.jar run/mods/
-      - name: Test real Minecraft client (software GPU + real resources)
+      - name: Launch real Minecraft with software OpenGL and native assets
         uses: headlesshq/mc-runtime-test@5.0.0
         with:
           mc: '1.21.1'
           modloader: neoforge
-          regex: '.*neoforge.*'
           java: '21'
           mc-runtime-test: neoforge
           dummy-assets: 'false'
           xvfb: 'true'
           cache-mc: github
           headlessmc-command: '--jvm "-Djava.awt.headless=true -Dpaleness.visualTest=true -DMcRuntimeGameTestMinExpectedGameTests=1"'
-      - name: Upload real Minecraft screenshots and logs
+      - name: Analyze screenshot and missing-model warnings
+        if: always()
+        run: python tools/review_visual_lab.py
+      - name: Preserve screenshots, QA reports and logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -53,6 +58,7 @@ jobs:
           path: |
             run/screenshots/paleness-*.png
             run/logs/latest.log
+            run/visual-review.md
             run/crash-reports/
           retention-days: 14
           if-no-files-found: warn
