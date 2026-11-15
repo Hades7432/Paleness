@@ -18,5 +18,11 @@
   "screen.paleness.infusing": "Насыщение...",
   "screen.paleness.infuser_prompt": "Кристалл + кварцевый блок",
   "tooltip.paleness.super_crystal": "Одноразово активирует портал",
-  "biome.paleness.stone_wastes": "Каменная пустошь Бледности"
+  "biome.paleness.stone_wastes": "Каменная пустошь Бледности",
+  "block.paleness.pale_ore": "Бледная руда",
+  "item.paleness.raw_pale_metal": "Сырой бледный металл",
+  "item.paleness.pale_metal_ingot": "Слиток бледного металла",
+  "block.paleness.pale_metal_block": "Блок бледного металла",
+  "item.paleness.paleness_detector": "Детектор Бледности",
+  "message.paleness.detector": "Бледность блока: %s"
 }

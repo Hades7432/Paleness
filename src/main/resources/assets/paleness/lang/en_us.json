@@ -18,5 +18,11 @@
   "screen.paleness.infusing": "Infusing...",
   "screen.paleness.infuser_prompt": "Shard + quartz block",
   "tooltip.paleness.super_crystal": "Single-use portal igniter",
-  "biome.paleness.stone_wastes": "Stone Wastes"
+  "biome.paleness.stone_wastes": "Stone Wastes",
+  "block.paleness.pale_ore": "Pale Ore",
+  "item.paleness.raw_pale_metal": "Raw Pale Metal",
+  "item.paleness.pale_metal_ingot": "Pale Metal Ingot",
+  "block.paleness.pale_metal_block": "Pale Metal Block",
+  "item.paleness.paleness_detector": "Paleness Detector",
+  "message.paleness.detector": "Block Paleness: %s"
 }

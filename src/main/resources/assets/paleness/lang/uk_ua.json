@@ -18,5 +18,11 @@
   "screen.paleness.infusing": "Насичення...",
   "screen.paleness.infuser_prompt": "Кристал + кварцовий блок",
   "tooltip.paleness.super_crystal": "Одноразово активує портал",
-  "biome.paleness.stone_wastes": "Кам'яна пустка Блідності"
+  "biome.paleness.stone_wastes": "Кам'яна пустка Блідності",
+  "block.paleness.pale_ore": "Бліда руда",
+  "item.paleness.raw_pale_metal": "Сирий блідий метал",
+  "item.paleness.pale_metal_ingot": "Зливок блідого металу",
+  "block.paleness.pale_metal_block": "Блок блідого металу",
+  "item.paleness.paleness_detector": "Детектор Блідності",
+  "message.paleness.detector": "Блідність блока: %s"
 }

@@ -73,10 +73,16 @@ public final class Paleness {
                 output.accept(PaleContent.INFUSER_ITEM.get());
                 output.accept(PaleContent.SUPER_QUARTZ_ITEM.get());
                 output.accept(PaleContent.SUPER_CRYSTAL.get());
+                output.accept(PaleMetalContent.PALE_ORE_ITEM.get());
+                output.accept(PaleMetalContent.RAW_PALE_METAL.get());
+                output.accept(PaleMetalContent.PALE_METAL_INGOT.get());
+                output.accept(PaleMetalContent.PALE_METAL_BLOCK_ITEM.get());
+                output.accept(PaleMetalContent.PALENESS_DETECTOR.get());
             }).build());
 
     public Paleness(IEventBus bus) {
         PaleContent.init();
+        PaleMetalContent.init();
         BLOCKS.register(bus);
         ITEMS.register(bus);
         BLOCK_ENTITIES.register(bus);

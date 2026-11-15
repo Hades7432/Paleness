@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": {
+    "item": "paleness:raw_pale_metal"
+  },
+  "result": {
+    "id": "paleness:pale_metal_ingot"
+  },
+  "experience": 1.3,
+  "cookingtime": 200
+}
