@@ -35,8 +35,12 @@ public final class PalePortalRenderer implements BlockEntityRenderer<PalePortalE
         // Deliberately within the sprite's 16-pixel UV area to prevent atlas bleeding.
         float parallaxX=(float)(Math.sin(t+camera.x*0.08)*0.7);
         float parallaxZ=(float)(Math.cos(t*0.9+camera.z*0.08)*0.7);
-        float u0=sprite.getU(1.5f+parallaxX),u1=sprite.getU(14.5f+parallaxX);
-        float v0=sprite.getV(1.5f+parallaxZ),v1=sprite.getV(14.5f+parallaxZ);
+        // TextureAtlasSprite UVs are normalized: never pass 16px coordinates
+        // directly to getU/getV or the quad samples unrelated sprites in the atlas.
+        float u0=sprite.getU0()+(sprite.getU1()-sprite.getU0())*(1.5f+parallaxX)/16f;
+        float u1=sprite.getU0()+(sprite.getU1()-sprite.getU0())*(14.5f+parallaxX)/16f;
+        float v0=sprite.getV0()+(sprite.getV1()-sprite.getV0())*(1.5f+parallaxZ)/16f;
+        float v1=sprite.getV0()+(sprite.getV1()-sprite.getV0())*(14.5f+parallaxZ)/16f;
         VertexConsumer c=buffers.getBuffer(RenderType.translucent());
         Matrix4f m=poseStack.last().pose();
         float y=0.76f;
