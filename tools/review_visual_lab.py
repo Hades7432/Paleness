@@ -4,23 +4,33 @@ from pathlib import Path
 from PIL import Image,ImageDraw
 import re
 import json
+import hashlib
 
 root=Path("run")
 shots=root/"screenshots"
 shots.mkdir(parents=True,exist_ok=True)
 expected=[
-  "paleness-01-gallery.png",
-  "paleness-02-analyzer-idle.png",
-  "paleness-03-condenser-idle.png",
+  "paleness-01-ore-metal-gallery.png",
+  "paleness-02-ore-closeup.png",
+  "paleness-03-metal-closeup.png",
   "paleness-04-infuser-idle.png",
   "paleness-05-infuser-active.png",
-  "paleness-06-analyzer-gui.png"
+  "paleness-06-infuser-gui.png",
+  "paleness-07-horizontal-portal.png"
 ]
 log=(root/"logs/latest.log")
 lines=log.read_text(errors="replace").splitlines() if log.exists() else []
 bad=re.compile(r"Unable to load model|Missing textures in model|missing model for variant|Exception loading blockstate definition|FileNotFoundException: paleness:",re.I)
 warnings=list(dict.fromkeys(line.strip() for line in lines if bad.search(line) and "paleness:" in line))
 missing=[name for name in expected if not (shots/name).is_file()]
+# Identical early frames commonly mean Minecraft was still displaying Loading Terrain.
+hashes={}
+for name in expected[:4]:
+    p=shots/name
+    if p.is_file():
+        digest=hashlib.sha256(p.read_bytes()).hexdigest()
+        hashes.setdefault(digest,[]).append(name)
+duplicates=[names for names in hashes.values() if len(names)>1]
 reports=[]
 tiles=[]
 for name in expected:
@@ -42,10 +52,10 @@ if tiles:
     for i,tile in enumerate(tiles):sheet.paste(tile,(0,i*394))
     sheet.save(shots/"paleness-contact-sheet.png")
 has_magenta=any(item["magenta_ratio"]>0.0002 for item in reports)
-passed=not (warnings or missing or has_magenta)
+passed=not (warnings or missing or has_magenta or duplicates)
 summary={"result":"PASS" if passed else "FAIL","expected_screenshots":len(expected),
     "real_screenshots":len(reports),"missing_screenshots":missing,
-    "model_warnings":warnings[:100],"screenshots":reports}
+    "model_warnings":warnings[:100],"duplicate_early_frames":duplicates,"screenshots":reports}
 (root/"visual-review.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
 out=["# Paleness Visual QA", "",f"Status: **{summary['result']}**",
      f"Real game screenshots: **{len(reports)}/{len(expected)}**", "",
@@ -54,6 +64,7 @@ for item in reports:
     out.append(f"- {item['file']}: {item['size'][0]}×{item['size'][1]}, "
                f"missing-texture-magenta {item['magenta_ratio']:.2%}")
 out.extend(["","## Missing captures"]+["- "+x for x in missing])
+out.extend(["","## Duplicate early frames"]+["- "+", ".join(x) for x in duplicates])
 out.extend(["","## Model loading warnings"]+["- "+x[:320] for x in warnings[:80]])
 out.extend(["","## Artist review — still requires actual image inspection",
  "- Compare silhouettes with the approved Paleness references",

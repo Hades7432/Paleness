@@ -29,6 +29,8 @@ public final class VisualTestClient {
         if(!ACTIVE)return;
         Minecraft mc=Minecraft.getInstance();
         if(mc.player==null||mc.level==null||mc.getSingleplayerServer()==null)return;
+        // Never photograph the 'Loading terrain' overlay.
+        if(mc.screen!=null && !(mc.screen instanceof InfuserScreen))return;
         if(++ticks==18&&!prepared){
             prepared=true;
             MinecraftServer s=mc.getSingleplayerServer();
@@ -54,6 +56,19 @@ public final class VisualTestClient {
             s.execute(()->openInfuser(s,uuid));
         }
         if(ticks==90)capture(mc,"paleness-06-infuser-gui.png");
+        if(ticks==94 && mc.screen instanceof InfuserScreen) {
+            mc.setScreen(null);
+            mc.player.closeContainer();
+        }
+        if(ticks==98) {
+            MinecraftServer s=mc.getSingleplayerServer();
+            s.execute(()->{
+                ServerPlayer player=s.getPlayerList().getPlayer(mc.player.getUUID());
+                if(player!=null&&base!=null)player.connection.teleport(
+                    base.getX()+0.5,base.getY()+4.7,base.getZ()-2.5,180f,48f);
+            });
+        }
+        if(ticks==109)capture(mc,"paleness-07-horizontal-portal.png");
     }
 
     private static void capture(Minecraft mc,String name){
@@ -86,6 +101,14 @@ public final class VisualTestClient {
         level.setBlock(base.offset(2,0,0),PaleContent.INFUSER.get().defaultBlockState()
             .setValue(InfuserBlock.FACING,Direction.SOUTH),3);
         level.setBlock(base.offset(6,0,0),PaleContent.SUPER_QUARTZ.get().defaultBlockState(),3);
+        BlockPos northwest=base.offset(-2,0,-8);
+        for(int x=0;x<5;x++)for(int z=0;z<5;z++) {
+            if((x==0||x==4)&&(z==0||z==4))continue;
+            if(x==0||x==4||z==0||z==4)
+                level.setBlock(northwest.offset(x,0,z),
+                    PaleContent.SUPER_QUARTZ.get().defaultBlockState(),3);
+        }
+        PalePortalLogic.light(level,northwest.offset(0,0,2));
         player.setItemInHand(InteractionHand.MAIN_HAND,
             new ItemStack(PaleMetalContent.PALENESS_DETECTOR.get()));
         level.setDayTime(6000);
