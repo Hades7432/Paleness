@@ -2,7 +2,7 @@ name: Paleness Visual Test Lab
 on:
   workflow_dispatch:
   push:
-    branches: [main, 'feature/paleness-0.5-overhaul']
+    branches: [main, 'feature/paleness-0.5-overhaul', 'feature/paleness-0.5.1-polish']
     paths:
       - 'src/main/**'
       - 'ci/**'

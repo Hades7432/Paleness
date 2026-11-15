@@ -83,6 +83,24 @@ public final class PalenessGameTests {
         h.succeed();
     }
 
+    @GameTest(template="empty",timeoutTicks=300)
+    public static void verifyDestinationIsOnGround(GameTestHelper h) {
+        ServerLevel level=h.getLevel();
+        BlockPos near=h.absolutePos(new BlockPos(11,2,11));
+        BlockPos gate=PalePortalLogic.makeDestination(level,near);
+        h.assertTrue(PalePortalLogic.validPortal(level,gate),
+            "Generated gateway must have all nine portal tiles in a 12-block frame");
+        BlockPos feet=PalePortalLogic.safeLanding(level,gate);
+        h.assertTrue(Math.max(Math.abs(feet.getX()-gate.getX()),
+            Math.abs(feet.getZ()-gate.getZ()))>=3,
+            "Destination must be at least three blocks from the gate");
+        h.assertTrue(level.getBlockState(feet.below()).isSolid(),
+            "Destination must be on solid local terrain, not over a void");
+        h.assertTrue(level.getBlockState(feet).isAir() && level.getBlockState(feet.above()).isAir(),
+            "Destination must have two air blocks of headroom");
+        h.succeed();
+    }
+
     @GameTest(template="empty",timeoutTicks=150)
     public static void verifyPaleInfuser(GameTestHelper h){
         ServerLevel world=h.getLevel();
