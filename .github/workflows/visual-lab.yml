@@ -7,14 +7,18 @@ on:
       - 'src/main/**'
       - 'ci/**'
       - 'tools/prepare_visual_assets.py'
+      - 'tools/validate_assets.py'
       - 'tools/review_visual_lab.py'
       - 'tools/render_texture_sheet.py'
       - '.github/workflows/visual-lab.yml'
       - 'build.gradle'
+concurrency:
+  group: paleness-visual-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   minecraft-client:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 12
     permissions:
       contents: read
     steps:
@@ -26,20 +30,23 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.14.3'
-      - name: Restore approved artistic resources
+      - name: Restore approved visual resources
         run: python tools/prepare_visual_assets.py
+      - name: Validate all art references before Minecraft
+        run: python tools/validate_assets.py
       - name: Build Paleness with real textures
         run: |
           python -m pip install --disable-pip-version-check pillow
           python tools/generate_index.py
           gradle --no-daemon build
-      - name: Generate pixel-art texture review sheet
+      - name: Create pixel-art review sheet
         run: python tools/render_texture_sheet.py
       - name: Stage Paleness in NeoForge
         run: |
           mkdir -p run/mods
           cp build/libs/paleness-*.jar run/mods/
-      - name: Launch real Minecraft with software OpenGL and native assets
+      - name: Capture Minecraft using software OpenGL
+        timeout-minutes: 7
         uses: headlesshq/mc-runtime-test@5.0.0
         with:
           mc: '1.21.1'
@@ -50,10 +57,10 @@ jobs:
           xvfb: 'true'
           cache-mc: github
           headlessmc-command: '--jvm "-Djava.awt.headless=true -Dpaleness.visualTest=true -DMcRuntimeGameTestMinExpectedGameTests=1"'
-      - name: Analyze screenshot and missing-model warnings
+      - name: Detect missing models and inspect screenshots
         if: always()
         run: python tools/review_visual_lab.py
-      - name: Preserve screenshots, QA reports and logs
+      - name: Preserve QA diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -62,6 +69,8 @@ jobs:
             run/screenshots/paleness-*.png
             run/logs/latest.log
             run/visual-review.md
+            run/visual-review.json
             run/crash-reports/
-          retention-days: 14
+            build/paleness-assets-check.json
+          retention-days: 21
           if-no-files-found: warn

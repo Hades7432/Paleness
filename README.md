@@ -1,26 +1,55 @@
-# Paleness — 0.2.0-alpha
+# Paleness — Minecraft 1.21.1 NeoForge
 
-Minecraft **1.21.1**, **NeoForge 21.1.x**, Java 21. Compatible with Create 6.0.10 for item logistics.
+**Status:** 0.4.0-alpha gameplay prototype; test lab under setup.
+JDK 21, NeoForge 21.1.x, optional Create 6.0.10 integration via item capabilities.
 
-## Features implemented in the Java sources
+Paleness is a techno-magical project centered around numeric whiteness /
+Paleness values. All Paleness magic should have a distinct **bright white**
+identity. Minecraft/Create-like pixels, deliberately readable silhouettes
+and simple geometry are approved over excessive geometric complexity.
 
-- **Paleness Analyzer:** one input, 4-second scan without consuming the item, status/result GUI.
-- **Paleness Condenser:** four ingredient slots, 5-second condensation, one data-bearing Paleness Shard.
-- **Paleness** based on canonical texture-pixel whiteness index, with special negative values for sculk.
-- **Five machine animation phases:** `MachineBlock.PHASE = 0..4` advances during operation, changing in-world block models.
-- Machines face the player on placement, change emitted light level during operation, and preserve their inventories.
-- **Five shard tiers:** item model overrides at 0.2, 0.4, 0.6 and 0.8 based on `paleness_value / 4000`.
-- Ukrainian, Russian and English translations, creative tab, recipes, basic Create item capability interop.
-- Analyzer progress bar no longer obscures the status label.
+## Current implemented gameplay
+- Analyzer: non-consuming one-slot scan.
+- Condenser: four input slots make a numeric Paleness shard.
+- Shard grades: five graphical tiers; sculk is negative.
+- Infuser/Обліднювач: a Paleness shard saturates quartz;
+  above 2.000 Paleness it becomes super-pale quartz.
+- Super-pale crystal: shapeless special recipe from >= 2.000 Paleness
+  of normal shards, one-time igniter.
+- Portal: 4×5 super-pale quartz frame, 2×3 internal portal.
+- Paleness dimension: bare stone terrain, separate biome, fixed daylight
+  and no sun/moon/stars intended.
+- English/Ukrainian/Russian languages.
+- Baseline NeoForge GameTest server and real graphical CI test lab.
 
-## Visual assets — important
+## Developer fast path
+1. Add **approved existing art** into `ci/paleness-approved-visual-assets-0.4.zip`
+   (see [ci/README.md](ci/README.md)). It is a **one-time bootstrap**
+   because the earlier approved 0.4 playable JAR was assembled outside Git.
+2. Every release build executes `tools/prepare_visual_assets.py`
+   followed by `tools/validate_assets.py`. No more builds with missing
+   purple/black textures are distributed as if complete.
+3. GitHub Actions → **Verify Paleness world** runs GameTest server checks.
+4. GitHub Actions → **Paleness Visual Test Lab** launches a real Minecraft
+   client with full assets and software OpenGL, records 6 screenshots, a
+   nearest-neighbor texture sheet and machine-readable QA.
+5. Inspect `paleness-contact-sheet.png`, `visual-review.md` and
+   `visual-review.json`. Automated PASS is **not** proof that art looks good.
+6. For additional development consult [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
-The **complete 0.2.0-alpha JAR** distributed through the conversation contains the approved v0.2 model/texture pack. **This GitHub source branch currently includes the Java integration but does not yet include the 0.2 binary visuals themselves**, because they were authored as a separate package. Therefore, **do not use the GitHub Actions artifact alone as the complete visual release**.
+**Rule for new art:** generate five concepts for approval before adding
+new mob, item or block models/textures. Previously approved assets can be
+bug-fixed without replacing their style without approval.
 
-To rebuild the visually complete release from this repository, first extract the separately distributed `Paleness-v0.2.0-Source-Assets.zip` into the repository root (the ZIP has `src/main/resources/assets/...` and `art/...`). Then run `gradle build` with JDK 21.
+## Installation
+Remove previous Paleness JARs from `mods`. Use the artifact only from a
+successful build with approved resources, and test portals in a new
+world/save backup first. Gradle build (or an earlier CI artifact without
+the art bundle) may be technically compiled but graphically incomplete.
 
-## Notes
-
-Visual phases are **discrete** model changes; they are not smooth skeletal animation or shader-based bloom. The source model assets are editable in Blockbench. In-game Minecraft client testing is still required after CI compilation. Create kinetics and advanced moving contraption support are not yet implemented.
-
-The recommended test is: replace the old 0.1 mod JAR with the distributed 0.2 JAR, place each machine, scan an item, then condense four ingredients into a shard. Check the five model phases and shard tier differences.
+## Limitations and next work
+Graphical CI uses **software OpenGL**, which can differ from a user's GPU
+in glass blending, fancy lighting, shadows and shaders. The test lab
+does not inspect every camera angle automatically or test Create kinetics.
+Full portal travel and return should be exercised with interactive
+client tests; current server GameTest verifies registration and recipes.

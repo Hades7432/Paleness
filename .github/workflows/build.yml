@@ -15,6 +15,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.14.3'
+      - name: Restore approved art (no missing-texture JAR releases)
+        run: python tools/prepare_visual_assets.py
+      - name: Validate approved art before release
+        run: python tools/validate_assets.py
       - name: Generate canonical vanilla Paleness values
         run: |
           python -m pip install --disable-pip-version-check pillow

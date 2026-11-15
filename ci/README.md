@@ -18,3 +18,13 @@ placeholders. New visual source changes should be committed to normal
 Check **Actions → Paleness Visual Test Lab** for screenshots and
 `run/visual-review.md`. CI status FAIL means a genuine art loading problem
 or a missing screenshot. A PASS never substitutes for reviewing the aesthetics.
+
+## CI safety guarantee
+The build workflow now deliberately fails **before uploading a JAR** if approved
+art is missing or invalid. The independent server-side GameTest still checks
+the gameplay systems. The visual job checks actual graphical screenshots,
+so a pink/black missing-model build cannot be mistaken for a finished release.
+
+When approved assets are all checked into src/main/resources as normal files,
+the legacy bundle is no longer required. Do not put new placeholder textures
+in the bundle or silently override later user-approved revisions.
