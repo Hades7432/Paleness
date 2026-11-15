@@ -7,14 +7,19 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
 /** Horizontal, non-solid portal plane. A renderer will use the approved bright-white art. */
-public final class PalePortalBlock extends Block {
+public final class PalePortalBlock extends Block implements EntityBlock {
     public PalePortalBlock(BlockBehaviour.Properties props) { super(props); }
-    @Override public RenderShape getRenderShape(BlockState state) { return RenderShape.MODEL; }
+    @Override public RenderShape getRenderShape(BlockState state) { return RenderShape.INVISIBLE; }
+    @Override public BlockEntity newBlockEntity(BlockPos pos,BlockState state) {
+        return new PalePortalEntity(pos,state);
+    }
 
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {

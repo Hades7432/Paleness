@@ -43,6 +43,9 @@ public final class PaleContent {
         Paleness.BLOCKS.register("paleness_portal", () -> new PalePortalBlock(
             BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).noCollission().noOcclusion()
                 .strength(-1.0f,3600000.0f).lightLevel(s -> 13).noLootTable()));
+    public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<PalePortalEntity>> PORTAL_BE =
+        Paleness.BLOCK_ENTITIES.register("paleness_portal", () ->
+            BlockEntityType.Builder.of(PalePortalEntity::new, PORTAL.get()).build(null));
     public static final DeferredItem<BlockItem> INFUSER_ITEM =
         Paleness.ITEMS.registerSimpleBlockItem("paleness_infuser", INFUSER);
     public static final DeferredItem<BlockItem> SUPER_QUARTZ_ITEM =
