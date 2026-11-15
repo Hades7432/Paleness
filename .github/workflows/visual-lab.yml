@@ -46,6 +46,7 @@ jobs:
           mkdir -p run/mods
           cp build/libs/paleness-*.jar run/mods/
       - name: Capture Minecraft using software OpenGL
+        id: capture
         timeout-minutes: 7
         uses: headlesshq/mc-runtime-test@5.0.0
         with:
@@ -58,7 +59,7 @@ jobs:
           cache-mc: github
           headlessmc-command: '--jvm "-Djava.awt.headless=true -Dpaleness.visualTest=true -DMcRuntimeGameTestMinExpectedGameTests=1"'
       - name: Detect missing models and inspect screenshots
-        if: always()
+        if: always() && steps.capture.outcome != 'skipped'
         run: python tools/review_visual_lab.py
       - name: Preserve QA diagnostics even on failure
         if: always()
