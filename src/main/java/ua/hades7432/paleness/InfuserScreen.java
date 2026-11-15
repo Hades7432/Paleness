@@ -39,7 +39,7 @@ public final class InfuserScreen extends AbstractContainerScreen<InfuserMenu> {
         g.fill(x+98,y+51,x+105,y+65,0xFFDAD6E4);
         g.fill(x+16,y+77,x+160,y+83,0xFF21242B);
         if(menu.phase()==1){
-            int bar=Math.min(140,menu.progress()*140/80);
+            int bar=Math.min(140,menu.progress()*140/40);
             g.fill(x+18,y+79,x+18+bar,y+81,0xFFFAF9FF);
         }
         for(int px:new int[]{5,165})for(int py:new int[]{5,201})

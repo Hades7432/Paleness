@@ -27,8 +27,6 @@ import java.util.List;
 
 public final class PaleContent {
     private PaleContent() {}
-    public static final DeferredRegister<RecipeSerializer<?>> RECIPES =
-        DeferredRegister.create(Registries.RECIPE_SERIALIZER, Paleness.ID);
     public static final DeferredHolder<DataComponentType<?>,DataComponentType<Integer>> INFUSED =
         Paleness.COMPONENTS.registerComponentType("infused_paleness", b ->
             b.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
@@ -72,7 +70,5 @@ public final class PaleContent {
     public static final DeferredHolder<MenuType<?>,MenuType<InfuserMenu>> INFUSER_MENU =
         Paleness.MENUS.register("infuser", () -> IMenuTypeExtension.create(
             (id, inv, buf) -> new InfuserMenu(id,inv,buf.readBlockPos())));
-    public static final DeferredHolder<RecipeSerializer<?>,RecipeSerializer<SuperCrystalRecipe>> SUPER_CRYSTAL_RECIPE =
-        RECIPES.register("super_crystal", () -> new SimpleCraftingRecipeSerializer<>(SuperCrystalRecipe::new));
     public static void init() {}
 }

@@ -20,7 +20,7 @@ public final class InfuserEntity extends BlockEntity implements MenuProvider {
     public final ItemStackHandler inventory=new ItemStackHandler(2) {
         @Override public int getSlotLimit(int slot) { return 1; }
         @Override public boolean isItemValid(int slot,ItemStack stack) {
-            return slot==0 ? stack.is(Paleness.SHARD.get()) : stack.is(Items.QUARTZ_BLOCK);
+            return slot==0 ? stack.is(PaleMetalContent.PALE_METAL_INGOT.get()) : stack.is(Items.QUARTZ_BLOCK);
         }
         @Override protected void onContentsChanged(int slot) { InfuserEntity.this.setChanged(); }
     };
@@ -41,8 +41,8 @@ public final class InfuserEntity extends BlockEntity implements MenuProvider {
     public boolean start() {
         if(progress>0) return false;
         ItemStack crystal=inventory.getStackInSlot(0), target=inventory.getStackInSlot(1);
-        if(!crystal.is(Paleness.SHARD.get()) || !target.is(Items.QUARTZ_BLOCK))return false;
-        if(PalenessValues.calculate(crystal)<=0)return false;
+        if(!crystal.is(PaleMetalContent.PALE_METAL_INGOT.get()) || !target.is(Items.QUARTZ_BLOCK))return false;
+        // A pale ingot is refined energy; two treatments upgrade natural quartz.
         fingerprint=hash();
         progress=1;
         state=1;
@@ -72,13 +72,13 @@ public final class InfuserEntity extends BlockEntity implements MenuProvider {
         if(e.fingerprint!=e.hash()){
             e.progress=0;e.state=0;e.phase(0);e.setChanged();return;
         }
-        if(++e.progress<80) {
-            e.phase(Math.min(3,1+e.progress*3/80));
+        if(++e.progress<40) {
+            e.phase(Math.min(3,1+e.progress*3/40));
             if(e.progress%4==0)e.setChanged();
             return;
         }
         ItemStack target=e.inventory.getStackInSlot(1);
-        int value=PalenessValues.calculate(target)+PalenessValues.calculate(e.inventory.getStackInSlot(0));
+        int value=PalenessValues.calculate(target)+750;
         if(target.is(Items.QUARTZ_BLOCK)){
             if(value>2000){
                 e.inventory.setStackInSlot(1,new ItemStack(PaleContent.SUPER_QUARTZ_ITEM.get()));

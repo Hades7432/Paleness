@@ -39,37 +39,16 @@ public final class Paleness {
     public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, ID);
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ID);
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PALENESS_VALUE =
-        COMPONENTS.registerComponentType("paleness_value", builder ->
-            builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
-
-    public static final DeferredBlock<MachineBlock> ANALYZER =
-        BLOCKS.register("paleness_analyzer", () -> new MachineBlock(true, BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.5f).lightLevel(state -> state.getValue(MachineBlock.PHASE) == 0 ? 2 : 7 + state.getValue(MachineBlock.PHASE)).requiresCorrectToolForDrops().noOcclusion()));
-    public static final DeferredBlock<MachineBlock> CONDENSER =
-        BLOCKS.register("paleness_condenser", () -> new MachineBlock(false, BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(4.5f).lightLevel(state -> state.getValue(MachineBlock.PHASE) == 0 ? 3 : Math.min(15, 8 + state.getValue(MachineBlock.PHASE))).requiresCorrectToolForDrops().noOcclusion()));
-    public static final DeferredItem<BlockItem> ANALYZER_ITEM = ITEMS.registerSimpleBlockItem("paleness_analyzer", ANALYZER);
-    public static final DeferredItem<BlockItem> CONDENSER_ITEM = ITEMS.registerSimpleBlockItem("paleness_condenser", CONDENSER);
-    public static final DeferredItem<Item> SHARD =
-        ITEMS.register("paleness_shard", () -> new ShardItem(new Item.Properties().stacksTo(16)));
-
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineEntity>> ANALYZER_BE =
-        BLOCK_ENTITIES.register("paleness_analyzer", () -> BlockEntityType.Builder.of(
-            (pos, state) -> new MachineEntity(true, pos, state), ANALYZER.get()).build(null));
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MachineEntity>> CONDENSER_BE =
-        BLOCK_ENTITIES.register("paleness_condenser", () -> BlockEntityType.Builder.of(
-            (pos, state) -> new MachineEntity(false, pos, state), CONDENSER.get()).build(null));
-    public static final DeferredHolder<MenuType<?>, MenuType<MachineMenu>> MACHINE_MENU =
-        MENUS.register("machine", () -> IMenuTypeExtension.create(
-            (windowId, inv, buf) -> new MachineMenu(windowId, inv, buf.readBlockPos())));
-
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB =
         TABS.register("paleness", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.paleness"))
-            .icon(() -> new ItemStack(SHARD.get()))
+            .icon(() -> new ItemStack(PaleMetalContent.PALENESS_DETECTOR.get()))
             .displayItems((parameters, output) -> {
-                output.accept(ANALYZER_ITEM.get());
-                output.accept(CONDENSER_ITEM.get());
-                output.accept(SHARD.get());
+                output.accept(PaleMetalContent.PALE_ORE_ITEM.get());
+                output.accept(PaleMetalContent.RAW_PALE_METAL.get());
+                output.accept(PaleMetalContent.PALE_METAL_INGOT.get());
+                output.accept(PaleMetalContent.PALE_METAL_BLOCK_ITEM.get());
+                output.accept(PaleMetalContent.PALENESS_DETECTOR.get());
                 output.accept(PaleContent.INFUSER_ITEM.get());
                 output.accept(PaleContent.SUPER_QUARTZ_ITEM.get());
                 output.accept(PaleContent.SUPER_CRYSTAL.get());
@@ -83,32 +62,19 @@ public final class Paleness {
     public Paleness(IEventBus bus) {
         PaleContent.init();
         PaleMetalContent.init();
+        PaleMetalContent.init();
         BLOCKS.register(bus);
         ITEMS.register(bus);
         BLOCK_ENTITIES.register(bus);
         MENUS.register(bus);
         COMPONENTS.register(bus);
         TABS.register(bus);
-        PaleContent.RECIPES.register(bus);
         bus.addListener(this::registerCapabilities);
     }
 
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, PaleContent.INFUSER_BE.get(),
                 (entity, side) -> entity.inventory);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ANALYZER_BE.get(),
-                (entity, side) -> entity.inventory);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, CONDENSER_BE.get(),
-                (entity, side) -> entity.inventory);
     }
 
-    public static final class ShardItem extends Item {
-        public ShardItem(Properties properties) { super(properties); }
-        @Override
-        public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-            super.appendHoverText(stack, context, tooltip, flag);
-            int value = stack.getOrDefault(PALENESS_VALUE.get(), 0);
-            tooltip.add(Component.translatable("tooltip.paleness.value", PalenessValues.format(value)));
-        }
-    }
 }

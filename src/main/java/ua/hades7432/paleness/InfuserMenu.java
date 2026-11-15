@@ -27,7 +27,7 @@ public final class InfuserMenu extends AbstractContainerMenu {
         this.pos=pos;this.machine=machine;this.data=data;
         addSlot(new SlotItemHandler(slots,0,45,52) {
             @Override public boolean mayPlace(ItemStack stack) {
-                return stack.is(Paleness.SHARD.get()) && (machine==null || machine.progress==0);
+                return stack.is(PaleMetalContent.PALE_METAL_INGOT.get()) && (machine==null || machine.progress==0);
             }
             @Override public boolean mayPickup(Player player){return machine==null || machine.progress==0;}
         });
@@ -56,7 +56,7 @@ public final class InfuserMenu extends AbstractContainerMenu {
         if(index<2){
             if(!moveItemStackTo(src,2,slots.size(),true))return ItemStack.EMPTY;
         } else {
-            int dest=src.is(Paleness.SHARD.get())?0:src.is(Items.QUARTZ_BLOCK)?1:-1;
+            int dest=src.is(PaleMetalContent.PALE_METAL_INGOT.get())?0:src.is(Items.QUARTZ_BLOCK)?1:-1;
             if(dest<0||!moveItemStackTo(src,dest,dest+1,false))return ItemStack.EMPTY;
         }
         if(src.isEmpty())slot.set(ItemStack.EMPTY); else slot.setChanged();

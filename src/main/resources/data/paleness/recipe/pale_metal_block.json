@@ -7,7 +7,9 @@
     "III"
   ],
   "key": {
-    "I": "paleness:pale_metal_ingot"
+    "I": {
+      "item": "paleness:pale_metal_ingot"
+    }
   },
   "result": {
     "id": "paleness:pale_metal_block",

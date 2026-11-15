@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    "paleness:pale_metal_block"
+    {
+      "item": "paleness:pale_metal_block"
+    }
   ],
   "result": {
     "id": "paleness:pale_metal_ingot",

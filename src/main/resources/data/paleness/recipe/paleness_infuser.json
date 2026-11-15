@@ -14,10 +14,10 @@
       "item": "minecraft:gold_ingot"
     },
     "S": {
-      "item": "paleness:paleness_shard"
+      "item": "paleness:pale_metal_ingot"
     },
     "A": {
-      "item": "paleness:paleness_analyzer"
+      "item": "minecraft:blast_furnace"
     }
   },
   "result": {

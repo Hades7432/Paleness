@@ -1,4 +1,21 @@
 {
-  "type": "paleness:super_crystal",
-  "category": "misc"
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " I ",
+    "IQI",
+    " I "
+  ],
+  "key": {
+    "I": {
+      "item": "paleness:pale_metal_ingot"
+    },
+    "Q": {
+      "item": "minecraft:quartz"
+    }
+  },
+  "result": {
+    "id": "paleness:super_pale_crystal",
+    "count": 1
+  }
 }
