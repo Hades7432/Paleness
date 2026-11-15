@@ -1,94 +1,154 @@
 package ua.hades7432.paleness;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 
+/**
+ * End-like HORIZONTAL Paleness gate: 3x3 opening inside 12 super-pale quartz
+ * frame blocks, corners are intentionally not needed.
+ */
 public final class PalePortalLogic {
-    public static final ResourceKey<Level> DIMENSION=ResourceKey.create(Registries.DIMENSION,
-        ResourceLocation.fromNamespaceAndPath(Paleness.ID,"paleness"));
-    private static final String RETURN_KEY="paleness:home_portal";
-    private PalePortalLogic(){}
+    public static final ResourceKey<Level> DIMENSION = ResourceKey.create(Registries.DIMENSION,
+            ResourceLocation.fromNamespaceAndPath(Paleness.ID, "paleness"));
+    private static final String HOME = "paleness:overworld_gate";
+    private static final String PALE = "paleness:dimension_gate";
+    private static final String LOCK = "paleness:gate_locked_until";
+    private static final int DISTANCE = 4;
+    private static final int COOLDOWN_TICKS = 160;
+    private PalePortalLogic() {}
 
-    private static BlockPos at(BlockPos base,Direction.Axis axis,int dx,int dy){
-        return axis==Direction.Axis.X ? base.offset(dx,dy,0) : base.offset(0,dy,dx);
+    private static BlockPos at(BlockPos nw, int x, int z) {
+        return nw.offset(x, 0, z);
     }
-    private static boolean frame(Level level,BlockPos base,Direction.Axis axis){
-        for(int y=0;y<5;y++)for(int x=0;x<4;x++){
-            BlockState state=level.getBlockState(at(base,axis,x,y));
-            if(x==0||x==3||y==0||y==4){
-                if(!state.is(PaleContent.SUPER_QUARTZ.get()))return false;
-            }else if(!state.isAir()&&!state.is(PaleContent.PORTAL.get()))return false;
+
+    // NW corner is an imaginary coordinate; no corner blocks are required.
+    public static boolean frame(Level level, BlockPos nw) {
+        for (int x = 0; x < 5; x++) for (int z = 0; z < 5; z++) {
+            if ((x == 0 || x == 4) && (z == 0 || z == 4)) continue;
+            BlockPos pos = at(nw, x, z);
+            if (x == 0 || x == 4 || z == 0 || z == 4) {
+                if (!level.getBlockState(pos).is(PaleContent.SUPER_QUARTZ.get())) return false;
+            } else {
+                var state = level.getBlockState(pos);
+                if (!state.isAir() && !state.is(PaleContent.PORTAL.get())) return false;
+            }
         }
         return true;
     }
-    public static boolean light(Level level,BlockPos clicked){
-        if(level.isClientSide)return false;
-        for(Direction.Axis axis:new Direction.Axis[]{Direction.Axis.X,Direction.Axis.Z})
-            for(int dy=-4;dy<=0;dy++)for(int side=-3;side<=0;side++){
-                BlockPos corner=at(clicked,axis,side,dy);
-                if(!frame(level,corner,axis))continue;
-                for(int y=1;y<=3;y++)for(int x=1;x<=2;x++)
-                    level.setBlock(at(corner,axis,x,y),
-                        PaleContent.PORTAL.get().defaultBlockState().setValue(PalePortalBlock.AXIS,axis),3);
-                return true;
+
+    public static BlockPos centerOf(Level level, BlockPos inner) {
+        for (int x = 1; x <= 3; x++) for (int z = 1; z <= 3; z++) {
+            BlockPos nw = inner.offset(-x, 0, -z);
+            if (frame(level, nw)) return nw.offset(2, 0, 2);
+        }
+        return null;
+    }
+
+    public static boolean light(Level level, BlockPos clickedFrame) {
+        if (level.isClientSide) return false;
+        for (int x = 0; x <= 4; x++) for (int z = 0; z <= 4; z++) {
+            BlockPos nw = clickedFrame.offset(-x, 0, -z);
+            if (!frame(level, nw)) continue;
+            // All 12 frame blocks are already present before any portal block is placed.
+            for (int ix = 1; ix <= 3; ix++) for (int iz = 1; iz <= 3; iz++)
+                level.setBlock(at(nw, ix, iz), PaleContent.PORTAL.get().defaultBlockState(), 3);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean validPortal(Level level, BlockPos pos) {
+        return centerOf(level, pos) != null;
+    }
+
+    /** An isolated destination gate and clear stone safety platform. */
+    private static BlockPos makeDestination(ServerLevel level, BlockPos near) {
+        BlockPos surface = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                new BlockPos(near.getX(), 0, near.getZ()));
+        int y = Math.clamp(surface.getY() + 5, 74, level.getMaxBuildHeight() - 12);
+        BlockPos center = new BlockPos(near.getX(), y, near.getZ());
+        BlockPos nw = center.offset(-2, 0, -2);
+        // Solid landing platform under the gate, extending out to safe dismounts.
+        for (int dx = -7; dx <= 7; dx++) for (int dz = -7; dz <= 7; dz++) {
+            level.setBlock(center.offset(dx, -1, dz), Blocks.STONE.defaultBlockState(), 3);
+            if (Math.abs(dx) > 2 || Math.abs(dz) > 2)
+                level.setBlock(center.offset(dx, 0, dz), Blocks.SMOOTH_STONE.defaultBlockState(), 3);
+            for (int dy = 1; dy <= 3; dy++)
+                level.setBlock(center.offset(dx, dy, dz), Blocks.AIR.defaultBlockState(), 3);
+        }
+        for (int x = 0; x < 5; x++) for (int z = 0; z < 5; z++) {
+            if ((x == 0 || x == 4) && (z == 0 || z == 4)) continue;
+            if (x == 0 || x == 4 || z == 0 || z == 4)
+                level.setBlock(at(nw, x, z), PaleContent.SUPER_QUARTZ.get().defaultBlockState(), 3);
+        }
+        for (int x = 1; x <= 3; x++) for (int z = 1; z <= 3; z++)
+            level.setBlock(at(nw, x, z), PaleContent.PORTAL.get().defaultBlockState(), 3);
+        return center;
+    }
+
+    private static BlockPos safeLanding(ServerLevel level, BlockPos center) {
+        for (int dist : new int[]{DISTANCE, DISTANCE + 1, DISTANCE + 2}) {
+            for (int[] dir : new int[][]{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}) {
+                BlockPos feet = center.offset(dir[0] * dist, 1, dir[1] * dist);
+                if (level.getBlockState(feet).isAir()
+                        && level.getBlockState(feet.above()).isAir()
+                        && level.getBlockState(feet.below()).isSolid())
+                    return feet;
             }
-        return false;
-    }
-    public static boolean validPortal(Level level,BlockPos portalPos,Direction.Axis axis){
-        for(int yOffset=-3;yOffset<=-1;yOffset++)for(int xOffset=-2;xOffset<=-1;xOffset++){
-            BlockPos base=at(portalPos,axis,xOffset,yOffset);
-            if(frame(level,base,axis))return true;
         }
-        return false;
-    }
-    private static BlockPos makeExit(ServerLevel level,BlockPos near,Direction.Axis axis){
-        BlockPos heightPos=level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-            new BlockPos(near.getX(),0,near.getZ()));
-        int y=Math.clamp(heightPos.getY()+1,70,level.getMaxBuildHeight()-8);
-        BlockPos base=new BlockPos(near.getX(),y,near.getZ());
-        // First prototype: a deliberate stone landing, not an unsafe teleport into caves/water.
-        for(int dx=-2;dx<=5;dx++)for(int dz=-2;dz<=5;dz++)
-            level.setBlock(base.offset(dx,-1,dz),Blocks.STONE.defaultBlockState(),3);
-        for(int yy=0;yy<5;yy++)for(int xx=0;xx<4;xx++){
-            BlockPos p=at(base,axis,xx,yy);
-            if(xx==0||xx==3||yy==0||yy==4)
-                level.setBlock(p,PaleContent.SUPER_QUARTZ.get().defaultBlockState(),3);
-            else level.setBlock(p,PaleContent.PORTAL.get().defaultBlockState()
-                .setValue(PalePortalBlock.AXIS,axis),3);
+        // Repair a limited safe arrival area only as a last resort.
+        BlockPos feet = center.offset(DISTANCE, 1, 0);
+        for (int x = -1; x <= 1; x++) for (int z = -1; z <= 1; z++) {
+            level.setBlock(feet.offset(x, -1, z), Blocks.SMOOTH_STONE.defaultBlockState(), 3);
+            level.setBlock(feet.offset(x, 0, z), Blocks.AIR.defaultBlockState(), 3);
+            level.setBlock(feet.offset(x, 1, z), Blocks.AIR.defaultBlockState(), 3);
         }
-        return at(base,axis,1,1);
+        return feet;
     }
-    public static void travel(ServerPlayer player,BlockPos source,Direction.Axis axis){
-        ServerLevel sourceLevel=player.serverLevel();
-        boolean comingBack=sourceLevel.dimension().equals(DIMENSION);
-        ServerLevel dest=sourceLevel.getServer().getLevel(
-            comingBack?Level.OVERWORLD:DIMENSION);
-        if(dest==null)return;
-        BlockPos landing;
-        if(comingBack){
-            long home=player.getPersistentData().getLong(RETURN_KEY);
-            BlockPos recorded=BlockPos.of(home);
-            if(home!=0 && dest.getBlockState(recorded).is(PaleContent.PORTAL.get()))
-                landing=recorded;
-            else landing=makeExit(dest,home==0?source:recorded,axis);
-        }else{
-            player.getPersistentData().putLong(RETURN_KEY,source.asLong());
-            landing=makeExit(dest,source,axis);
-        }
-        Vec3 pos=Vec3.atCenterOf(landing).add(0,0.05,0);
+
+    public static void travel(ServerPlayer player, BlockPos touched) {
+        ServerLevel origin = player.serverLevel();
+        if (player.isOnPortalCooldown()) return;
+        CompoundTag data = player.getPersistentData();
+        if (origin.getGameTime() < data.getLong(LOCK)) return;
+        if (!validPortal(origin, touched)) return;
+        BlockPos sourceCenter = centerOf(origin, touched);
+        if (sourceCenter == null) return;
+
+        boolean returning = origin.dimension().equals(DIMENSION);
+        ServerLevel target = origin.getServer().getLevel(returning ? Level.OVERWORLD : DIMENSION);
+        if (target == null) return;
+
+        if (!returning) data.putLong(HOME, sourceCenter.asLong());
+        String key = returning ? HOME : PALE;
+        long old = data.getLong(key);
+        BlockPos saved = BlockPos.of(old);
+        BlockPos destCenter = old != 0 && target.getBlockState(saved).is(PaleContent.PORTAL.get())
+                && validPortal(target, saved) ? saved
+                : makeDestination(target, returning ? sourceCenter : sourceCenter);
+        if (!returning) data.putLong(PALE, destCenter.asLong());
+
+        BlockPos feet = safeLanding(target, destCenter);
+        // Cross-dimension cooldown, including Creative and simultaneous portal blocks.
+        data.putLong(LOCK, target.getGameTime() + COOLDOWN_TICKS);
         player.setPortalCooldown();
-        player.changeDimension(new DimensionTransition(dest,pos,Vec3.ZERO,
-            player.getYRot(),player.getXRot(),false,DimensionTransition.PLAY_PORTAL_SOUND));
+        Vec3 destination = Vec3.atBottomCenterOf(feet);
+        ServerPlayer moved = (ServerPlayer) player.changeDimension(
+                new DimensionTransition(target, destination, Vec3.ZERO,
+                        player.getYRot(), player.getXRot(), false, DimensionTransition.PLAY_PORTAL_SOUND));
+        if (moved != null) {
+            moved.setPortalCooldown();
+            moved.getPersistentData().putLong(LOCK, target.getGameTime() + COOLDOWN_TICKS);
+        }
     }
 }
