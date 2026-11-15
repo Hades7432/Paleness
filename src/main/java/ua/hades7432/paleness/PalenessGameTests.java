@@ -31,6 +31,12 @@ public final class PalenessGameTests {
                 ResourceLocation.fromNamespaceAndPath(Paleness.ID,id)).isPresent(),
                 "Missing recipe: "+id);
         }
+        h.assertTrue(PaleMetalContent.PALE_ORE.get().defaultBlockState().is(
+            net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE),
+            "Pale Ore must be mineable with a pickaxe");
+        h.assertTrue(PaleMetalContent.PALE_ORE.get().defaultBlockState().is(
+            net.minecraft.tags.BlockTags.NEEDS_IRON_TOOL),
+            "Pale Ore must need iron or better");
         h.succeed();
     }
 
