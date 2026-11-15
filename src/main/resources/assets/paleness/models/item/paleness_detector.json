@@ -13,36 +13,36 @@
   "display": {
     "firstperson_righthand": {
       "rotation": [
-        -17,
-        155,
+        -15,
+        150,
         8
       ],
       "translation": [
-        1,
-        1,
+        -4,
+        -1,
         0
       ],
       "scale": [
-        0.65,
-        0.65,
-        0.65
+        0.43,
+        0.43,
+        0.43
       ]
     },
     "firstperson_lefthand": {
       "rotation": [
-        -17,
-        205,
+        -15,
+        210,
         -8
       ],
       "translation": [
-        1,
-        1,
+        -4,
+        -1,
         0
       ],
       "scale": [
-        0.65,
-        0.65,
-        0.65
+        0.43,
+        0.43,
+        0.43
       ]
     },
     "thirdperson_righthand": {
