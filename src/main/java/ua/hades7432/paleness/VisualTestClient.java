@@ -8,6 +8,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
@@ -15,121 +17,94 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
-/**
- * Opt-in screenshot lab. Does NOTHING in normal gameplay.
- * Only enabled by -Dpaleness.visualTest=true in the isolated CI world.
- */
-@EventBusSubscriber(modid = Paleness.ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid=Paleness.ID,value=Dist.CLIENT)
 public final class VisualTestClient {
-    private static final boolean ACTIVE = Boolean.getBoolean("paleness.visualTest");
-    private static int ticks = 0;
-    private static boolean constructed = false;
+    private static final boolean ACTIVE=Boolean.getBoolean("paleness.visualTest");
+    private static int ticks;
     private static BlockPos base;
-    private static boolean capture1, capture2, capture3;
+    private static boolean prepared;
+    private VisualTestClient(){}
 
-    private VisualTestClient() {}
-
-    @SubscribeEvent
-    public static void onTick(ClientTickEvent.Post event) {
-        if (!ACTIVE) return;
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null || mc.getSingleplayerServer() == null) return;
-        if (++ticks == 18 && !constructed) {
-            constructed = true;
-            MinecraftServer server = mc.getSingleplayerServer();
-            UUID uuid = mc.player.getUUID();
-            server.execute(() -> prepare(server, uuid));
+    @SubscribeEvent public static void onTick(ClientTickEvent.Post event){
+        if(!ACTIVE)return;
+        Minecraft mc=Minecraft.getInstance();
+        if(mc.player==null||mc.level==null||mc.getSingleplayerServer()==null)return;
+        if(++ticks==18&&!prepared){
+            prepared=true;
+            MinecraftServer s=mc.getSingleplayerServer();
+            UUID uuid=mc.player.getUUID();
+            s.execute(()->prepare(s,uuid));
         }
-        if (!constructed) return;
-        // Fast, deterministic camera tour before the runtime-test client exits.
-        if (ticks == 29) shot(mc, "paleness-01-gallery.png");
-        if (ticks == 33) moveCamera(mc, -5, 4.2);
-        if (ticks == 40) shot(mc, "paleness-02-analyzer-idle.png");
-        if (ticks == 43) moveCamera(mc, -1, 4.2);
-        if (ticks == 50) shot(mc, "paleness-03-condenser-idle.png");
-        if (ticks == 53) moveCamera(mc, 3, 4.2);
-        if (ticks == 60) shot(mc, "paleness-04-infuser-idle.png");
-        if (ticks == 62) {
-            MinecraftServer server = mc.getSingleplayerServer();
-            if (server != null && base != null) server.execute(() -> activate(server));
+        if(!prepared)return;
+        if(ticks==32)capture(mc,"paleness-01-ore-metal-gallery.png");
+        if(ticks==35)move(mc,-6,4.0);
+        if(ticks==43)capture(mc,"paleness-02-ore-closeup.png");
+        if(ticks==46)move(mc,-2,4.0);
+        if(ticks==54)capture(mc,"paleness-03-metal-closeup.png");
+        if(ticks==57)move(mc,2,4.0);
+        if(ticks==65)capture(mc,"paleness-04-infuser-idle.png");
+        if(ticks==67) {
+            MinecraftServer s=mc.getSingleplayerServer();
+            s.execute(()->activate(s));
         }
-        if (ticks == 68) shot(mc, "paleness-05-infuser-active.png");
-        if (ticks == 71) moveCamera(mc, -5, 4.2);
-        if (ticks == 77) {
-            MinecraftServer server = mc.getSingleplayerServer();
-            if (server != null && base != null) server.execute(() -> openAnalyzer(server, mc.player.getUUID()));
+        if(ticks==74)capture(mc,"paleness-05-infuser-active.png");
+        if(ticks==79) {
+            MinecraftServer s=mc.getSingleplayerServer();
+            UUID uuid=mc.player.getUUID();
+            s.execute(()->openInfuser(s,uuid));
         }
-        if (ticks == 86) shot(mc, "paleness-06-analyzer-gui.png");
-
+        if(ticks==90)capture(mc,"paleness-06-infuser-gui.png");
     }
 
-    private static void moveCamera(Minecraft mc, int offsetX, double zDistance) {
-        MinecraftServer server = mc.getSingleplayerServer();
-        if (server == null || base == null || mc.player == null) return;
-        UUID uuid = mc.player.getUUID();
-        server.execute(() -> {
-            ServerPlayer player = server.getPlayerList().getPlayer(uuid);
-            if (player != null)
-                player.connection.teleport(base.getX()+offsetX+0.5,
-                        base.getY()+2.0,base.getZ()+zDistance,180f,12f);
+    private static void capture(Minecraft mc,String name){
+        Screenshot.grab(mc.gameDirectory,name,mc.getMainRenderTarget(),msg->{});
+        System.out.println("[Paleness Visual 0.5] "+name);
+    }
+    private static void move(Minecraft mc,int x,double z){
+        MinecraftServer s=mc.getSingleplayerServer();
+        if(s==null||base==null)return;
+        UUID uuid=mc.player.getUUID();
+        s.execute(()->{
+            ServerPlayer p=s.getPlayerList().getPlayer(uuid);
+            if(p!=null)p.connection.teleport(base.getX()+x+.5,
+                base.getY()+2.0,base.getZ()+z,180f,12f);
         });
     }
-
-    private static void shot(Minecraft mc, String name) {
-        try {
-            Screenshot.grab(mc.gameDirectory, name, mc.getMainRenderTarget(), msg -> {});
-            System.out.println("[Paleness Test Lab] Screenshot requested: " + name);
-        } catch (Exception e) {
-            System.err.println("[Paleness Test Lab] Screenshot failed: " + e);
+    private static void prepare(MinecraftServer s,UUID uuid){
+        ServerPlayer player=s.getPlayerList().getPlayer(uuid);
+        if(player==null)return;
+        ServerLevel level=player.serverLevel();
+        BlockPos initial=player.blockPosition();
+        base=new BlockPos(initial.getX(),Math.max(110,initial.getY()+12),initial.getZ());
+        for(int dx=-11;dx<=11;dx++)for(int dz=-11;dz<=14;dz++){
+            level.setBlock(base.offset(dx,-1,dz),Blocks.SMOOTH_STONE.defaultBlockState(),3);
+            for(int dy=0;dy<=7;dy++)
+                level.setBlock(base.offset(dx,dy,dz),Blocks.AIR.defaultBlockState(),3);
         }
-    }
-
-    private static void prepare(MinecraftServer server, UUID uuid) {
-        ServerPlayer player = server.getPlayerList().getPlayer(uuid);
-        if (player == null) return;
-        ServerLevel level = player.serverLevel();
-        BlockPos original = player.blockPosition();
-        base = new BlockPos(original.getX(), Math.max(110, original.getY() + 12), original.getZ());
-        // This is an ephemeral isolated CI world: clear the rendering stage and add a floor.
-        for (int dx = -10; dx <= 10; dx++)
-            for (int dz = -9; dz <= 13; dz++) {
-                level.setBlock(base.offset(dx, -1, dz), Blocks.SMOOTH_STONE.defaultBlockState(), 3);
-                for (int dy = 0; dy <= 9; dy++)
-                    level.setBlock(base.offset(dx, dy, dz), Blocks.AIR.defaultBlockState(), 3);
-            }
-        BlockState analyzer = Paleness.ANALYZER.get().defaultBlockState()
-            .setValue(MachineBlock.FACING, Direction.SOUTH);
-        BlockState condenser = Paleness.CONDENSER.get().defaultBlockState()
-            .setValue(MachineBlock.FACING, Direction.SOUTH);
-        BlockState infuser = PaleContent.INFUSER.get().defaultBlockState()
-            .setValue(InfuserBlock.FACING, Direction.SOUTH);
-        level.setBlock(base.offset(-5, 0, 0), analyzer, 3);
-        level.setBlock(base.offset(-1, 0, 0), condenser, 3);
-        level.setBlock(base.offset(3, 0, 0), infuser, 3);
-        level.setBlock(base.offset(7, 0, 0), PaleContent.SUPER_QUARTZ.get().defaultBlockState(), 3);
+        level.setBlock(base.offset(-6,0,0),PaleMetalContent.PALE_ORE.get().defaultBlockState(),3);
+        level.setBlock(base.offset(-2,0,0),PaleMetalContent.PALE_METAL_BLOCK.get().defaultBlockState(),3);
+        level.setBlock(base.offset(2,0,0),PaleContent.INFUSER.get().defaultBlockState()
+            .setValue(InfuserBlock.FACING,Direction.SOUTH),3);
+        level.setBlock(base.offset(6,0,0),PaleContent.SUPER_QUARTZ.get().defaultBlockState(),3);
+        player.setItemInHand(InteractionHand.MAIN_HAND,
+            new ItemStack(PaleMetalContent.PALENESS_DETECTOR.get()));
         level.setDayTime(6000);
-        level.setWeatherParameters(6000, 0, false, false);
-        player.connection.teleport(base.getX() + 0.5, base.getY() + 2.2,
-                base.getZ() + 9.5, 180f, 15f);
-        System.out.println("[Paleness Test Lab] Test gallery placed in isolated world.");
+        level.setWeatherParameters(6000,0,false,false);
+        player.connection.teleport(base.getX()+.5,base.getY()+2.2,
+            base.getZ()+9.5,180f,15f);
     }
-
-    private static void activate(MinecraftServer server) {
-        ServerLevel level = server.overworld();
-        if (base == null) return;
-        BlockPos p1=base.offset(-5,0,0), p2=base.offset(-1,0,0), p3=base.offset(3,0,0);
-        for (BlockPos pos : new BlockPos[]{p1,p2})
-            if (level.getBlockState(pos).getBlock() instanceof MachineBlock)
-                level.setBlock(pos, level.getBlockState(pos).setValue(MachineBlock.PHASE, 3), 3);
-        if (level.getBlockState(p3).getBlock() instanceof InfuserBlock)
-            level.setBlock(p3, level.getBlockState(p3).setValue(InfuserBlock.PHASE, 3), 3);
+    private static void activate(MinecraftServer s){
+        if(base==null)return;
+        ServerLevel level=s.overworld();
+        BlockPos p=base.offset(2,0,0);
+        BlockState b=level.getBlockState(p);
+        if(b.getBlock() instanceof InfuserBlock)
+            level.setBlock(p,b.setValue(InfuserBlock.PHASE,3),3);
     }
-
-    private static void openAnalyzer(MinecraftServer server, UUID uuid) {
-        if (base == null) return;
-        ServerPlayer p = server.getPlayerList().getPlayer(uuid);
-        if (p != null && server.overworld().getBlockEntity(base.offset(-5, 0, 0))
-                instanceof MachineEntity machine)
-            p.openMenu(machine, buf -> buf.writeBlockPos(base.offset(-5, 0, 0)));
+    private static void openInfuser(MinecraftServer s,UUID uuid){
+        if(base==null)return;
+        ServerPlayer p=s.getPlayerList().getPlayer(uuid);
+        if(p!=null&&s.overworld().getBlockEntity(base.offset(2,0,0))instanceof InfuserEntity e)
+            p.openMenu(e,buf->buf.writeBlockPos(base.offset(2,0,0)));
     }
 }

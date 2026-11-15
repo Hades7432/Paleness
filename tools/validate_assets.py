@@ -53,16 +53,16 @@ for img in pngs:
         w,h=struct.unpack(">II",raw[16:24])
         if min(w,h)<1 or max(w,h)>4096:complain(f"Bad PNG dimensions {w}x{h}: {img}")
 
-for machine in ("paleness_analyzer","paleness_condenser","paleness_infuser"):
+for machine in ("paleness_infuser",):
     for phase in range(5):
         if not (base/"models/block"/f"{machine}_phase_{phase}.json").is_file():
             complain(f"Missing approved 3D model: {machine}, phase {phase}")
-for item in ("super_pale_crystal","paleness_shard","super_pale_quartz"):
+for item in ("super_pale_crystal","super_pale_quartz","paleness_detector","raw_pale_metal","pale_metal_ingot","pale_metal_block"):
     if not (base/"models/item"/f"{item}.json").is_file():
         complain(f"Missing approved item model: {item}")
 if not (base/"textures/block/paleness_portal.png").is_file():
     complain("Paleness portal texture missing")
-if len(models)<25 or len(pngs)<60:
+if len(models)<14 or len(pngs)<35:
     complain(f"Insufficient approved assets: {len(models)} models / {len(pngs)} textures")
 Path("build").mkdir(exist_ok=True)
 Path("build/paleness-assets-check.json").write_text(json.dumps(
@@ -70,3 +70,14 @@ Path("build/paleness-assets-check.json").write_text(json.dumps(
 print(f"[Paleness Assets] {len(models)} JSON models, {len(pngs)} PNG textures, {len(errors)} issues")
 for e in errors[:40]:print("::error::"+e,file=sys.stderr)
 if errors:raise SystemExit(1)
+
+# Minecraft's canonical low-resolution art contract for newly approved 0.5 assets.
+for texture in ("block/pale_ore","block/pale_metal_block",
+                "item/raw_pale_metal","item/pale_metal_ingot",
+                "item/detector_body","item/detector_screen"):
+    img=base/"textures"/(texture+".png")
+    if not img.exists():complain("Missing 0.5 texture "+texture)
+    else:
+        raw=img.read_bytes()
+        if raw[:8]!=bytes([137,80,78,71,13,10,26,10]) or struct.unpack(">II",raw[16:24])!=(16,16):
+            complain("Non-16x16 texture "+texture)

@@ -11,16 +11,6 @@ assets=root/"assets/paleness"
 bundle=Path("ci/paleness-approved-visual-assets-0.4.zip")
 # Future-proofing: once the approved visuals are checked in as regular files,
 # they remain the source of truth; do not overwrite newer revisions with old art.
-sentinels=[
-  assets/"models/block/paleness_infuser_phase_0.json",
-  assets/"models/block/paleness_analyzer_phase_4.json",
-  assets/"models/block/paleness_condenser_phase_4.json",
-  assets/"textures/block/paleness_portal.png",
-  assets/"models/item/super_pale_crystal.json",
-]
-if all(p.exists() for p in sentinels):
-    print("[Paleness Assets] Found source-controlled models; skipping legacy bundle")
-    raise SystemExit(0)
 if not bundle.is_file():
     print("::error title=Approved art not yet in repository::Upload "
           "paleness-approved-visual-assets-0.4.zip to ci/ in GitHub. "
@@ -42,9 +32,13 @@ try:
             blob=archive.read(name)
             if hashlib.sha256(blob).hexdigest()!=meta["sha256"]:
                 raise ValueError(f"SHA-256 mismatch: {name}")
+            # Old analyzer/condenser and shard art must not leak into 0.5.
+            if any(token in name for token in ("paleness_analyzer","paleness_condenser","paleness_shard")):
+                continue
             dest=root/sub
-            dest.parent.mkdir(parents=True,exist_ok=True)
-            dest.write_bytes(blob)
+            if not dest.exists():  # Newly approved source-controlled art has priority.
+                dest.parent.mkdir(parents=True,exist_ok=True)
+                dest.write_bytes(blob)
 except (BadZipFile,KeyError,ValueError) as ex:
     print(f"::error title=Invalid approved asset archive::{ex}",file=sys.stderr)
     raise SystemExit(2)
