@@ -41,21 +41,25 @@ public final class VisualTestClient {
             server.execute(() -> prepare(server, uuid));
         }
         if (!constructed) return;
-        // Capture the gallery, a close-up, active machinery and the real GUI
-        // before the runtime-test mod closes its short-lived single-player world.
-        if (ticks == 33) shot(mc, "paleness-gallery.png");
-        if (ticks == 40) moveCamera(mc, -5, 4.2);
-        if (ticks == 49) shot(mc, "paleness-analyzer-idle.png");
-        if (ticks == 54) {
+        // Fast, deterministic camera tour before the runtime-test client exits.
+        if (ticks == 29) shot(mc, "paleness-01-gallery.png");
+        if (ticks == 33) moveCamera(mc, -5, 4.2);
+        if (ticks == 40) shot(mc, "paleness-02-analyzer-idle.png");
+        if (ticks == 43) moveCamera(mc, -1, 4.2);
+        if (ticks == 50) shot(mc, "paleness-03-condenser-idle.png");
+        if (ticks == 53) moveCamera(mc, 3, 4.2);
+        if (ticks == 60) shot(mc, "paleness-04-infuser-idle.png");
+        if (ticks == 62) {
             MinecraftServer server = mc.getSingleplayerServer();
             if (server != null && base != null) server.execute(() -> activate(server));
         }
-        if (ticks == 65) shot(mc, "paleness-analyzer-working.png");
-        if (ticks == 70) {
+        if (ticks == 68) shot(mc, "paleness-05-infuser-active.png");
+        if (ticks == 71) moveCamera(mc, -5, 4.2);
+        if (ticks == 77) {
             MinecraftServer server = mc.getSingleplayerServer();
             if (server != null && base != null) server.execute(() -> openAnalyzer(server, mc.player.getUUID()));
         }
-        if (ticks == 81) shot(mc, "paleness-analyzer-gui.png");
+        if (ticks == 86) shot(mc, "paleness-06-analyzer-gui.png");
 
     }
 
