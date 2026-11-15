@@ -3,6 +3,7 @@ package ua.hades7432.paleness;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -28,7 +29,7 @@ public final class PaleMetalContent {
     public static final DeferredBlock<Block> PALE_METAL_BLOCK =
         Paleness.BLOCKS.register("pale_metal_block", () -> new Block(
             BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ)
-                .strength(5f, 6f).sound(SoundType.METAL).requiresCorrectToolForDrops()));
+                .strength(5f, 6f).sound(Blocks.IRON_BLOCK.defaultBlockState().getSoundType()).requiresCorrectToolForDrops()));
     public static final DeferredItem<BlockItem> PALE_METAL_BLOCK_ITEM =
         Paleness.ITEMS.registerSimpleBlockItem("pale_metal_block", PALE_METAL_BLOCK);
 

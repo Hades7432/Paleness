@@ -69,15 +69,18 @@ Path("build/paleness-assets-check.json").write_text(json.dumps(
     {"models":len(models),"textures":len(pngs),"errors":errors},indent=2),encoding="utf-8")
 print(f"[Paleness Assets] {len(models)} JSON models, {len(pngs)} PNG textures, {len(errors)} issues")
 for e in errors[:40]:print("::error::"+e,file=sys.stderr)
-if errors:raise SystemExit(1)
 
 # Minecraft's canonical low-resolution art contract for newly approved 0.5 assets.
 for texture in ("block/pale_ore","block/pale_metal_block",
                 "item/raw_pale_metal","item/pale_metal_ingot",
-                "item/detector_body","item/detector_screen"):
+                "item/detector_body","item/detector_screen","item/detector_keys"):
     img=base/"textures"/(texture+".png")
     if not img.exists():complain("Missing 0.5 texture "+texture)
     else:
         raw=img.read_bytes()
         if raw[:8]!=bytes([137,80,78,71,13,10,26,10]) or struct.unpack(">II",raw[16:24])!=(16,16):
             complain("Non-16x16 texture "+texture)
+
+# This check must run after the low-resolution checks above, not before.
+for e in errors[40:]:print('::error::'+e,file=sys.stderr)
+if errors:raise SystemExit(1)

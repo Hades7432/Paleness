@@ -37,6 +37,9 @@ public final class PalenessGameTests {
         h.assertTrue(PaleMetalContent.PALE_ORE.get().defaultBlockState().is(
             net.minecraft.tags.BlockTags.NEEDS_IRON_TOOL),
             "Pale Ore must need iron or better");
+        h.assertTrue(PaleMetalContent.PALE_METAL_BLOCK.get().defaultBlockState().getSoundType()
+            == Blocks.IRON_BLOCK.defaultBlockState().getSoundType(),
+            "Pale Metal Block must sound exactly like Iron Block");
         h.succeed();
     }
 
