@@ -38,37 +38,41 @@ public final class VisualTestClient {
             s.execute(()->prepare(s,uuid));
         }
         if(!prepared)return;
-        if(ticks==32)capture(mc,"paleness-01-ore-metal-gallery.png");
-        if(ticks==35)move(mc,-6,4.0);
-        if(ticks==43)capture(mc,"paleness-02-ore-closeup.png");
-        if(ticks==46)move(mc,-2,4.0);
-        if(ticks==54)capture(mc,"paleness-03-metal-closeup.png");
-        if(ticks==57)move(mc,2,4.0);
-        if(ticks==65)capture(mc,"paleness-04-infuser-idle.png");
-        if(ticks==67) {
-            MinecraftServer s=mc.getSingleplayerServer();
-            s.execute(()->activate(s));
+        // Runtime GameTest closes the Minecraft client shortly after tick 90.
+        // All seven screenshots are captured BEFORE the last GUI shot.
+        if(ticks==28)capture(mc,"paleness-01-ore-metal-gallery.png");
+        if(ticks==31)move(mc,-6,4.0);
+        if(ticks==37)capture(mc,"paleness-02-ore-closeup.png");
+        if(ticks==39)move(mc,-2,4.0);
+        if(ticks==45)capture(mc,"paleness-03-metal-closeup.png");
+        if(ticks==47)move(mc,2,4.0);
+        if(ticks==53)capture(mc,"paleness-04-infuser-idle.png");
+        if(ticks==55) {
+            MinecraftServer server=mc.getSingleplayerServer();
+            server.execute(()->activate(server));
         }
-        if(ticks==74)capture(mc,"paleness-05-infuser-active.png");
-        if(ticks==79) {
-            MinecraftServer s=mc.getSingleplayerServer();
+        if(ticks==60)capture(mc,"paleness-05-infuser-active.png");
+        if(ticks==62) {
+            MinecraftServer server=mc.getSingleplayerServer();
             UUID uuid=mc.player.getUUID();
-            s.execute(()->openInfuser(s,uuid));
-        }
-        if(ticks==90)capture(mc,"paleness-06-infuser-gui.png");
-        if(ticks==94 && mc.screen instanceof InfuserScreen) {
-            mc.setScreen(null);
-            mc.player.closeContainer();
-        }
-        if(ticks==98) {
-            MinecraftServer s=mc.getSingleplayerServer();
-            s.execute(()->{
-                ServerPlayer player=s.getPlayerList().getPlayer(mc.player.getUUID());
+            server.execute(()->{
+                ServerPlayer player=server.getPlayerList().getPlayer(uuid);
                 if(player!=null&&base!=null)player.connection.teleport(
                     base.getX()+0.5,base.getY()+4.7,base.getZ()-2.5,180f,48f);
             });
         }
-        if(ticks==109)capture(mc,"paleness-07-horizontal-portal.png");
+        if(ticks==70)capture(mc,"paleness-07-horizontal-portal.png");
+        if(ticks==72)move(mc,2,4.0);
+        if(ticks==77) {
+            MinecraftServer server=mc.getSingleplayerServer();
+            UUID uuid=mc.player.getUUID();
+            server.execute(()->openInfuser(server,uuid));
+        }
+        if(ticks==85)capture(mc,"paleness-06-infuser-gui.png");
+        if(ticks==87&&mc.screen instanceof InfuserScreen) {
+            mc.setScreen(null);
+            mc.player.closeContainer();
+        }
     }
 
     private static void capture(Minecraft mc,String name){
