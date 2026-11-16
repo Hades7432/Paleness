@@ -64,6 +64,42 @@ public final class PalenessGameTests {
         h.succeed();
     }
 
+
+    @GameTest(template="empty", timeoutTicks=500)
+    public static void verifyOreCanActuallyReplaceDeepslate(GameTestHelper h) {
+        // This deliberately exercises the registered ore-placement algorithm,
+        // not only JSON existence or biome-tag membership.
+        ServerLevel level=h.getLevel();
+        BlockPos sample=h.absolutePos(new BlockPos(12,0,12));
+        BlockPos origin=new BlockPos(sample.getX(),-52,sample.getZ());
+        var stone=Blocks.DEEPSLATE.defaultBlockState();
+        for(int dx=-5;dx<=5;dx++)
+            for(int dy=-5;dy<=5;dy++)
+                for(int dz=-5;dz<=5;dz++)
+                    level.setBlock(origin.offset(dx,dy,dz),stone,2);
+        var reg=level.registryAccess().registryOrThrow(
+            net.minecraft.core.registries.Registries.CONFIGURED_FEATURE);
+        var feature=reg.get(ResourceLocation.fromNamespaceAndPath(Paleness.ID,"pale_ore"));
+        h.assertTrue(feature!=null,"Configured Pale Ore feature is missing");
+        boolean placed=false;
+        for(int i=0;i<8;i++){
+            if(feature.place(level,level.getChunkSource().getGenerator(),
+                  net.minecraft.util.RandomSource.create(9931L+i),origin)) {
+                placed=true;
+                break;
+            }
+        }
+        int count=0;
+        for(int dx=-5;dx<=5;dx++)
+            for(int dy=-5;dy<=5;dy++)
+                for(int dz=-5;dz<=5;dz++)
+                    if(level.getBlockState(origin.offset(dx,dy,dz))
+                            .is(PaleMetalContent.PALE_ORE.get()))count++;
+        h.assertTrue(placed&&count>0,
+            "Registered Pale Ore worldgen did not place ore into deepslate at Y=-52");
+        h.succeed();
+    }
+
     @GameTest(template="empty",timeoutTicks=150)
     public static void verifyPalenessValues(GameTestHelper h) {
         h.assertTrue(PalenessValues.calculate(new ItemStack(Items.SCULK)) < 0,
