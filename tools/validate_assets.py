@@ -62,6 +62,11 @@ for item in ("super_pale_crystal","super_pale_quartz","paleness_detector","raw_p
         complain(f"Missing approved item model: {item}")
 if not (base/"textures/block/paleness_portal.png").is_file():
     complain("Paleness portal texture missing")
+else:
+    png=base/"textures/block/paleness_portal.png"
+    raw=png.read_bytes()
+    if struct.unpack(">II",raw[16:24])!=(16,384):
+        complain(f"Portal must have 24 animated 16x16 frames, not {struct.unpack('>II',raw[16:24])}")
 if len(models)<14 or len(pngs)<35:
     complain(f"Insufficient approved assets: {len(models)} models / {len(pngs)} textures")
 Path("build").mkdir(exist_ok=True)

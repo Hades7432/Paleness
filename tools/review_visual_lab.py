@@ -16,7 +16,8 @@ expected=[
   "paleness-04-infuser-idle.png",
   "paleness-05-infuser-active.png",
   "paleness-06-infuser-gui.png",
-  "paleness-07-horizontal-portal.png"
+  "paleness-07-horizontal-portal.png",
+  "paleness-08-portal-after-animation.png"
 ]
 log=(root/"logs/latest.log")
 lines=log.read_text(errors="replace").splitlines() if log.exists() else []

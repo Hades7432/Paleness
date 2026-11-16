@@ -61,8 +61,9 @@ public final class VisualTestClient {
                     base.getX()+0.5,base.getY()+4.7,base.getZ()-2.5,180f,48f);
             });
         }
-        if(ticks==74)capture(mc,"paleness-07-horizontal-portal.png");
-        if(ticks==76)move(mc,2,4.0);
+        if(ticks==70)capture(mc,"paleness-07-horizontal-portal.png");
+        if(ticks==77)capture(mc,"paleness-08-portal-after-animation.png");
+        if(ticks==78)move(mc,2,4.0);
         if(ticks==80) {
             MinecraftServer server=mc.getSingleplayerServer();
             UUID uuid=mc.player.getUUID();
