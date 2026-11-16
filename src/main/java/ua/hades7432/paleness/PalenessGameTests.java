@@ -43,6 +43,27 @@ public final class PalenessGameTests {
         h.succeed();
     }
 
+
+    @GameTest(template="empty", timeoutTicks=250)
+    public static void verifyOreWiredIntoOverworldBiomes(GameTestHelper h) {
+        // A registered feature is not sufficient: the biome modifier must
+        // actually insert it into the generated Overworld biome settings.
+        var access = h.getLevel().registryAccess();
+        var biomes = access.registryOrThrow(net.minecraft.core.registries.Registries.BIOME);
+        var plains = biomes.getHolderOrThrow(net.minecraft.world.level.biome.Biomes.PLAINS);
+        h.assertTrue(plains.is(net.minecraft.tags.BiomeTags.IS_OVERWORLD),
+            "Minecraft plains must belong to minecraft:is_overworld");
+        var key = net.minecraft.resources.ResourceKey.create(
+            net.minecraft.core.registries.Registries.PLACED_FEATURE,
+            ResourceLocation.fromNamespaceAndPath(Paleness.ID, "pale_ore"));
+        var placed = access.registryOrThrow(net.minecraft.core.registries.Registries.PLACED_FEATURE)
+            .getHolderOrThrow(key);
+        var settings = plains.value().modifiableBiomeInfo().get().generationSettings();
+        h.assertTrue(settings.hasFeature(placed.value()),
+            "Pale Ore is NOT in effective Overworld biome features: check NeoForge biome modifier");
+        h.succeed();
+    }
+
     @GameTest(template="empty",timeoutTicks=150)
     public static void verifyPalenessValues(GameTestHelper h) {
         h.assertTrue(PalenessValues.calculate(new ItemStack(Items.SCULK)) < 0,
