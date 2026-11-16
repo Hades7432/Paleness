@@ -36,9 +36,9 @@ public final class PalePortalBlock extends Block implements EntityBlock {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource r) {
-        if (r.nextInt(5) != 0) return;
+        if (r.nextInt(8) != 0) return;
         double x = pos.getX() + r.nextDouble();
-        double y = pos.getY() + 0.06;
+        double y = pos.getY() + 0.79 + r.nextDouble() * 0.12;
         double z = pos.getZ() + r.nextDouble();
         level.addParticle(ParticleTypes.END_ROD, x, y, z, 0, 0.006, 0);
     }

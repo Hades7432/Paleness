@@ -80,6 +80,14 @@ public final class PalenessGameTests {
         BlockPos inner=northwest.offset(2,0,2);
         h.assertTrue(PalePortalLogic.validPortal(level,inner),
             "The active portal should remain lit with its border intact");
+        // Corners must not be required either during ignition or after activation.
+        for(int x : new int[]{0,4})for(int z : new int[]{0,4})
+            h.assertTrue(level.getBlockState(northwest.offset(x,0,z)).isAir(),
+                "Paleness portal corners must be optional");
+        // Portal block renderers must agree on one center / UV anchor.
+        for(int x=1;x<=3;x++)for(int z=1;z<=3;z++)
+            h.assertTrue(inner.equals(PalePortalLogic.centerOf(level,northwest.offset(x,0,z))),
+                "All 9 portal blocks must resolve the same anchor");
         h.succeed();
     }
 

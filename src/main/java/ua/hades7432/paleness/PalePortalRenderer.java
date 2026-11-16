@@ -11,61 +11,91 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 /**
- * Light-filled horizontal membrane, with a small camera-dependent parallax.
- * Uses the animated 16-frame atlas sprite instead of hardcoded Nether swirls.
+ * One 3x3 world-anchored animated WHITE portal, even though the game stores it
+ * as nine separate blocks. All nine renderers use the same portal center and
+ * absolute camera position, so their UVs meet without tile seams.
+ *
+ * There are two depth layers. The upper layer shifts subtly with viewing
+ * angle to approximate End-portal parallax without reusing the End's dark,
+ * starry shader. The underlying sprite preserves Paleness's bright artwork.
  */
 public final class PalePortalRenderer implements BlockEntityRenderer<PalePortalEntity> {
     private static final ResourceLocation SPRITE =
-        ResourceLocation.fromNamespaceAndPath(Paleness.ID,"block/paleness_portal");
+        ResourceLocation.fromNamespaceAndPath(Paleness.ID, "block/paleness_portal");
+    private static final float UV_MARGIN = 0.018f;
     public PalePortalRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(PalePortalEntity be, float partialTick, PoseStack poseStack,
-                       MultiBufferSource buffers, int packedLight, int overlay) {
-        if(be.getLevel()==null)return;
-        TextureAtlasSprite sprite=Minecraft.getInstance()
+    public void render(PalePortalEntity entity, float partialTick, PoseStack pose,
+                       MultiBufferSource buffers, int packedLight, int packedOverlay) {
+        if (entity.getLevel() == null) return;
+        BlockPos tile = entity.getBlockPos();
+        BlockPos center = PalePortalLogic.centerOf(entity.getLevel(), tile);
+        if (center == null) return; // Never draw orphaned portal remnants.
+
+        // The nine cells share exactly ONE UV interval. No per-block repeats
+        // and no tile-specific temporal phase: all adjacent edges align.
+        int cellX = tile.getX() - center.getX() + 1;
+        int cellZ = tile.getZ() - center.getZ() + 1;
+        if (cellX < 0 || cellX > 2 || cellZ < 0 || cellZ > 2) return;
+
+        TextureAtlasSprite sprite = Minecraft.getInstance()
             .getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(SPRITE);
-        Vec3 camera=Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        double t=(be.getLevel().getGameTime()+partialTick)*0.06;
-        // Deliberately within the sprite's 16-pixel UV area to prevent atlas bleeding.
-        float parallaxX=(float)(Math.sin(t+camera.x*0.08)*0.7);
-        float parallaxZ=(float)(Math.cos(t*0.9+camera.z*0.08)*0.7);
-        // TextureAtlasSprite UVs are normalized: never pass 16px coordinates
-        // directly to getU/getV or the quad samples unrelated sprites in the atlas.
-        float u0=sprite.getU0()+(sprite.getU1()-sprite.getU0())*(1.5f+parallaxX)/16f;
-        float u1=sprite.getU0()+(sprite.getU1()-sprite.getU0())*(14.5f+parallaxX)/16f;
-        float v0=sprite.getV0()+(sprite.getV1()-sprite.getV0())*(1.5f+parallaxZ)/16f;
-        float v1=sprite.getV0()+(sprite.getV1()-sprite.getV0())*(14.5f+parallaxZ)/16f;
-        VertexConsumer c=buffers.getBuffer(RenderType.translucent());
-        Matrix4f m=poseStack.last().pose();
-        float y=0.76f;
-        quad(c,m,y,u0,u1,v0,v1,false);
-        quad(c,m,y-0.002f,u0,u1,v0,v1,true);
+        Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        double distanceY = Math.max(2.0, Math.abs(camera.y - (center.getY() + 0.77)));
+        float gazeX = Mth.clamp((float)((camera.x - (center.getX() + 0.5)) / distanceY), -1, 1);
+        float gazeZ = Mth.clamp((float)((camera.z - (center.getZ() + 0.5)) / distanceY), -1, 1);
+        float t = (entity.getLevel().getGameTime() + partialTick) * 0.055f;
+
+        VertexConsumer c = buffers.getBuffer(RenderType.translucent());
+        Matrix4f matrix = pose.last().pose();
+
+        // Base is a white continuous fabric, not nine independent sprites.
+        layer(c, matrix, sprite, cellX, cellZ, 0.770f, 252, 0, 0);
+        // A soft shallower layer catches the player's gaze as the camera moves;
+        // the small UV offset is global, keeping the entire 3x3 membrane seamless.
+        float driftX = gazeX * 0.022f + (float)Math.sin(t) * 0.005f;
+        float driftZ = gazeZ * 0.022f + (float)Math.cos(t) * 0.005f;
+        layer(c, matrix, sprite, cellX, cellZ, 0.792f, 78, driftX, driftZ);
     }
 
-    private static void v(VertexConsumer c,Matrix4f m,float x,float y,float z,
-                          float u,float v,float normal) {
-        c.addVertex(m,x,y,z).setColor(255,255,255,250).setUv(u,v)
-            .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
-            .setNormal(0,normal,0);
+    private static float uv(TextureAtlasSprite sprite, float normalized, boolean horizontal) {
+        float safe = Mth.clamp(normalized, UV_MARGIN, 1f - UV_MARGIN);
+        return horizontal ? Mth.lerp(safe, sprite.getU0(), sprite.getU1())
+                          : Mth.lerp(safe, sprite.getV0(), sprite.getV1());
     }
-    private static void quad(VertexConsumer c,Matrix4f m,float y,
-                             float u0,float u1,float v0,float v1,boolean underside) {
-        if(!underside) {
-            v(c,m,0,y,0,u0,v0,1);
-            v(c,m,0,y,1,u0,v1,1);
-            v(c,m,1,y,1,u1,v1,1);
-            v(c,m,1,y,0,u1,v0,1);
-        } else {
-            v(c,m,1,y,0,u1,v0,-1);
-            v(c,m,1,y,1,u1,v1,-1);
-            v(c,m,0,y,1,u0,v1,-1);
-            v(c,m,0,y,0,u0,v0,-1);
-        }
+
+    private static void layer(VertexConsumer c, Matrix4f matrix, TextureAtlasSprite sprite,
+                              int x, int z, float height, int alpha,
+                              float shiftU, float shiftV) {
+        // Single continuous 0..1 coordinate system across ALL 9 portal cells.
+        float loU = uv(sprite, 0.03f + (x / 3f) * 0.94f + shiftU, true);
+        float hiU = uv(sprite, 0.03f + ((x + 1) / 3f) * 0.94f + shiftU, true);
+        float loV = uv(sprite, 0.03f + (z / 3f) * 0.94f + shiftV, false);
+        float hiV = uv(sprite, 0.03f + ((z + 1) / 3f) * 0.94f + shiftV, false);
+
+        vertex(c, matrix, 0, height, 0, loU, loV, alpha, 1);
+        vertex(c, matrix, 0, height, 1, loU, hiV, alpha, 1);
+        vertex(c, matrix, 1, height, 1, hiU, hiV, alpha, 1);
+        vertex(c, matrix, 1, height, 0, hiU, loV, alpha, 1);
+
+        vertex(c, matrix, 1, height - 0.002f, 0, hiU, loV, alpha, -1);
+        vertex(c, matrix, 1, height - 0.002f, 1, hiU, hiV, alpha, -1);
+        vertex(c, matrix, 0, height - 0.002f, 1, loU, hiV, alpha, -1);
+        vertex(c, matrix, 0, height - 0.002f, 0, loU, loV, alpha, -1);
+    }
+
+    private static void vertex(VertexConsumer c, Matrix4f m, float x, float y, float z,
+                               float u, float v, int alpha, float normalY) {
+        c.addVertex(m, x, y, z).setColor(255, 255, 255, alpha)
+         .setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY)
+         .setLight(LightTexture.FULL_BRIGHT).setNormal(0, normalY, 0);
     }
 }
