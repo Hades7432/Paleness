@@ -88,7 +88,14 @@ public final class PalenessGameTests {
         for(int x=1;x<=3;x++)for(int z=1;z<=3;z++)
             h.assertTrue(inner.equals(PalePortalLogic.centerOf(level,northwest.offset(x,0,z))),
                 "All 9 portal blocks must resolve the same anchor");
-        h.succeed();
+        // Break one mandatory side of the frame: the whole gate must extinguish.
+        level.removeBlock(northwest.offset(0,0,2),false);
+        h.runAfterDelay(2,()->{
+            for(int x=1;x<=3;x++)for(int z=1;z<=3;z++)
+                h.assertTrue(!level.getBlockState(northwest.offset(x,0,z)).is(PaleContent.PORTAL.get()),
+                    "Broken portal frame must remove all nine active tiles");
+            h.succeed();
+        });
     }
 
     @GameTest(template="empty",timeoutTicks=300)

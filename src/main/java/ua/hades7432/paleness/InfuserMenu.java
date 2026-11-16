@@ -50,6 +50,9 @@ public final class InfuserMenu extends AbstractContainerMenu {
                 && p.distanceToSqr(pos.getX()+.5,pos.getY()+.5,pos.getZ()+.5)<=64;
     }
     @Override public ItemStack quickMoveStack(Player p,int index){
+        if(index<0 || index>=slots.size())return ItemStack.EMPTY;
+        // Shift-click must respect the same lock as the normal machine slots.
+        if(machine!=null && machine.progress>0 && index<2)return ItemStack.EMPTY;
         Slot slot=slots.get(index);
         if(!slot.hasItem())return ItemStack.EMPTY;
         ItemStack src=slot.getItem(),result=src.copy();
