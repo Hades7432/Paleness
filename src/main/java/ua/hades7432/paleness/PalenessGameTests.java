@@ -25,7 +25,7 @@ public final class PalenessGameTests {
     @GameTest(template="empty",timeoutTicks=150)
     public static void verifyRecipesAndRegistry(GameTestHelper h){
         var level=h.getLevel();
-        for(String id:new String[]{"pale_alloy","pale_igniter","pale_metal_block",
+        for(String id:new String[]{"pale_alloy","pale_igniter","soul_tagger","pale_metal_block",
             "pale_metal_ingots_from_block","pale_metal_ingot_smelting","pale_metal_ingot_blasting"}){
             h.assertTrue(level.getRecipeManager().byKey(
                 ResourceLocation.fromNamespaceAndPath(Paleness.ID,id)).isPresent(),"Missing recipe: "+id);
