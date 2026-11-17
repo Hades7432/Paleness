@@ -35,7 +35,8 @@ public final class VisualTestClient {
         }
         if(!prepared)return;
         if(ticks==31)capture(mc,"paleness-01-ore-metal-gallery.png");
-        if(ticks==35)teleport(mc,-6,3,12);
+        // Keep the 2×2 quartz group fully within the next screenshot.
+        if(ticks==35)teleport(mc,2,5,32);
         if(ticks==41)capture(mc,"paleness-02-pale-quartz-connected.png");
         if(ticks==44)teleport(mc,2,4,12);
         if(ticks==50)capture(mc,"paleness-03-pale-quartz-closeup.png");
@@ -99,7 +100,9 @@ public final class VisualTestClient {
             new ItemStack(PaleContent.SOUL_TAGGER.get()));
         level.setDayTime(6000);
         level.setWeatherParameters(6000,0,false,false);
-        player.connection.teleport(base.getX()+.5,base.getY()+2.3,
-            base.getZ()+9.5,180f,12f);
+        // Start facing the Ore (-6, 0) and Metal (-2, 0) gallery,
+        // rather than the portal on the far side of the lab.
+        player.connection.teleport(base.getX()-3.5,base.getY()+2.3,
+            base.getZ()+5.5,180f,32f);
     }
 }
