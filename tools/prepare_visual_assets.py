@@ -43,3 +43,8 @@ except (BadZipFile,KeyError,ValueError) as ex:
     print(f"::error title=Invalid approved asset archive::{ex}",file=sys.stderr)
     raise SystemExit(2)
 print(f"[Paleness Assets] Restored {len(files)} approved files; SHA-256 verified")
+
+
+# New approved 0.6 resources intentionally override previous 0.4 fallback art.
+import subprocess
+subprocess.run([sys.executable,"tools/unpack_approved_06_assets.py"],check=True)

@@ -19,3 +19,13 @@ neoForge {
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 
 sourceSets.main.resources.srcDir('src/generated/resources')
+
+
+// Keep the approved Paleness 0.6 art reproducible even for direct Gradle builds.
+// The ZIP is SHA256-locked; images are written to src/main/resources before packaging.
+tasks.register('installApprovedAssets06', Exec) {
+    commandLine 'python3', 'tools/unpack_approved_06_assets.py'
+}
+tasks.named('processResources') {
+    dependsOn tasks.named('installApprovedAssets06')
+}

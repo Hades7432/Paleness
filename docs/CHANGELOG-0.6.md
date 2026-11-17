@@ -8,7 +8,7 @@
 - Eight Pale Souls around Flint and Steel make a single-use Pale Igniter, used to light the horizontal 5x5 portal frame.
 - Super-Pale Crystal, Super-Pale Quartz and the obsolete Infuser machine are no longer registered or craftable.
 - Pale Ore: 2 attempts per chunk, Y=-60 to -46, veins up to 3, 25% air-discard (75% open-air chance).
-- New portal B sprite and approved 3D Soul Tagger D model are delivered in accompanying 0.6 approved asset pack; the final JAR contains those exact files.
+- Portal B animation (32 frames), approved 16x16 resources, and the editable Soul Tagger D Blockbench model are SHA256-locked in ci/paleness-0.6-approved-assets.zip and automatically extracted for builds.
 - Back up existing worlds: removing registered blocks/items can leave old block IDs unmapped.
 
 Development branch: feature/paleness-0.6-souls-alloy. NeoForge 21.1 / Minecraft 1.21.1.

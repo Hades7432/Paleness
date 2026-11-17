@@ -16,6 +16,8 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.14.3'
+      - name: Install approved 0.6 assets
+        run: python tools/unpack_approved_06_assets.py
       - name: Generate texture-based values
         run: |
           python -m pip install --disable-pip-version-check pillow
