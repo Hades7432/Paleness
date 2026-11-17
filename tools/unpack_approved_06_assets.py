@@ -34,5 +34,11 @@ with zipfile.ZipFile(archive) as z:
                 raise SystemExit(f"Non-vanilla pixel size {name}: {w}x{h}")
         dest.parent.mkdir(parents=True,exist_ok=True)
         dest.write_bytes(blob)
+        if name.startswith("assets/paleness/") and mapped!=name:
+            # Keep the source-name alias for the preview-model reference,
+            # while the active portal uses the stable atlas sprite.
+            original=Path("src/main/resources")/name
+            original.parent.mkdir(parents=True,exist_ok=True)
+            original.write_bytes(blob)
         count+=1
 print(f"[Paleness 0.6] Installed {count} byte-verified approved art files.")

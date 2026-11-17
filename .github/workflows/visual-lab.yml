@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/main/**'
       - 'ci/**'
+      - 'tools/unpack_approved_06_assets.py'
       - 'tools/prepare_visual_assets.py'
       - 'tools/validate_assets.py'
       - 'tools/review_visual_lab.py'
