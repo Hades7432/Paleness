@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "paleness:block/pale_quartz",
+    "north": "paleness:block/pale_quartz_connected/pale_quartz_06",
+    "east": "paleness:block/pale_quartz_connected/pale_quartz_0c",
+    "south": "paleness:block/pale_quartz_connected/pale_quartz_0c",
+    "west": "paleness:block/pale_quartz_connected/pale_quartz_06",
+    "up": "paleness:block/pale_quartz_connected/pale_quartz_03",
+    "down": "paleness:block/pale_quartz_connected/pale_quartz_06"
+  }
+}

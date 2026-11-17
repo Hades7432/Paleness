@@ -2,7 +2,7 @@ name: Verify Paleness world
 on:
   workflow_dispatch:
   push:
-    branches: [main, 'feature/paleness-0.5-overhaul', 'feature/paleness-0.5.1-polish', 'feature/paleness-0.5.2-portal-rework']
+    branches: [main, 'feature/paleness-0.5-overhaul', 'feature/paleness-0.5.1-polish', 'feature/paleness-0.5.2-portal-rework', 'feature/paleness-0.6-souls-alloy']
 jobs:
   world-test:
     runs-on: ubuntu-latest

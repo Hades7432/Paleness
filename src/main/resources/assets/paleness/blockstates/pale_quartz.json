@@ -1,0 +1,196 @@
+{
+  "variants": {
+    "north=false,east=false,south=false,west=false,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_00"
+    },
+    "north=true,east=false,south=false,west=false,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_01"
+    },
+    "north=false,east=true,south=false,west=false,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_02"
+    },
+    "north=true,east=true,south=false,west=false,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_03"
+    },
+    "north=false,east=false,south=true,west=false,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_04"
+    },
+    "north=true,east=false,south=true,west=false,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_05"
+    },
+    "north=false,east=true,south=true,west=false,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_06"
+    },
+    "north=true,east=true,south=true,west=false,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_07"
+    },
+    "north=false,east=false,south=false,west=true,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_08"
+    },
+    "north=true,east=false,south=false,west=true,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_09"
+    },
+    "north=false,east=true,south=false,west=true,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_0a"
+    },
+    "north=true,east=true,south=false,west=true,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_0b"
+    },
+    "north=false,east=false,south=true,west=true,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_0c"
+    },
+    "north=true,east=false,south=true,west=true,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_0d"
+    },
+    "north=false,east=true,south=true,west=true,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_0e"
+    },
+    "north=true,east=true,south=true,west=true,up=false,down=false": {
+      "model": "paleness:block/pale_quartz_connection_0f"
+    },
+    "north=false,east=false,south=false,west=false,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_10"
+    },
+    "north=true,east=false,south=false,west=false,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_11"
+    },
+    "north=false,east=true,south=false,west=false,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_12"
+    },
+    "north=true,east=true,south=false,west=false,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_13"
+    },
+    "north=false,east=false,south=true,west=false,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_14"
+    },
+    "north=true,east=false,south=true,west=false,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_15"
+    },
+    "north=false,east=true,south=true,west=false,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_16"
+    },
+    "north=true,east=true,south=true,west=false,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_17"
+    },
+    "north=false,east=false,south=false,west=true,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_18"
+    },
+    "north=true,east=false,south=false,west=true,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_19"
+    },
+    "north=false,east=true,south=false,west=true,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_1a"
+    },
+    "north=true,east=true,south=false,west=true,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_1b"
+    },
+    "north=false,east=false,south=true,west=true,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_1c"
+    },
+    "north=true,east=false,south=true,west=true,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_1d"
+    },
+    "north=false,east=true,south=true,west=true,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_1e"
+    },
+    "north=true,east=true,south=true,west=true,up=true,down=false": {
+      "model": "paleness:block/pale_quartz_connection_1f"
+    },
+    "north=false,east=false,south=false,west=false,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_20"
+    },
+    "north=true,east=false,south=false,west=false,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_21"
+    },
+    "north=false,east=true,south=false,west=false,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_22"
+    },
+    "north=true,east=true,south=false,west=false,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_23"
+    },
+    "north=false,east=false,south=true,west=false,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_24"
+    },
+    "north=true,east=false,south=true,west=false,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_25"
+    },
+    "north=false,east=true,south=true,west=false,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_26"
+    },
+    "north=true,east=true,south=true,west=false,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_27"
+    },
+    "north=false,east=false,south=false,west=true,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_28"
+    },
+    "north=true,east=false,south=false,west=true,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_29"
+    },
+    "north=false,east=true,south=false,west=true,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_2a"
+    },
+    "north=true,east=true,south=false,west=true,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_2b"
+    },
+    "north=false,east=false,south=true,west=true,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_2c"
+    },
+    "north=true,east=false,south=true,west=true,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_2d"
+    },
+    "north=false,east=true,south=true,west=true,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_2e"
+    },
+    "north=true,east=true,south=true,west=true,up=false,down=true": {
+      "model": "paleness:block/pale_quartz_connection_2f"
+    },
+    "north=false,east=false,south=false,west=false,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_30"
+    },
+    "north=true,east=false,south=false,west=false,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_31"
+    },
+    "north=false,east=true,south=false,west=false,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_32"
+    },
+    "north=true,east=true,south=false,west=false,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_33"
+    },
+    "north=false,east=false,south=true,west=false,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_34"
+    },
+    "north=true,east=false,south=true,west=false,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_35"
+    },
+    "north=false,east=true,south=true,west=false,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_36"
+    },
+    "north=true,east=true,south=true,west=false,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_37"
+    },
+    "north=false,east=false,south=false,west=true,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_38"
+    },
+    "north=true,east=false,south=false,west=true,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_39"
+    },
+    "north=false,east=true,south=false,west=true,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_3a"
+    },
+    "north=true,east=true,south=false,west=true,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_3b"
+    },
+    "north=false,east=false,south=true,west=true,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_3c"
+    },
+    "north=true,east=false,south=true,west=true,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_3d"
+    },
+    "north=false,east=true,south=true,west=true,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_3e"
+    },
+    "north=true,east=true,south=true,west=true,up=true,down=true": {
+      "model": "paleness:block/pale_quartz_connection_3f"
+    }
+  }
+}

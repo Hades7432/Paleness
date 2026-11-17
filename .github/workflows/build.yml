@@ -1,7 +1,7 @@
 name: Build Paleness
 on:
   push:
-    branches: [main, 'feature/paleness-0.5-overhaul', 'feature/paleness-0.5.1-polish', 'feature/paleness-0.5.2-portal-rework']
+    branches: [main, 'feature/paleness-0.5-overhaul', 'feature/paleness-0.5.1-polish', 'feature/paleness-0.5.2-portal-rework', 'feature/paleness-0.6-souls-alloy']
   workflow_dispatch:
 jobs:
   build:
@@ -30,6 +30,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: paleness-0.5.2-alpha
+          name: paleness-0.6.0-alpha
           path: build/libs/*.jar
           if-no-files-found: error
