@@ -19,7 +19,10 @@ with zipfile.ZipFile(archive) as z:
         path=Path(name)
         if path.is_absolute() or ".." in path.parts:raise SystemExit(f"Unsafe asset path: {name}")
         if name.startswith("assets/paleness/"):
-            dest=Path("src/main/resources")/path
+            # The approved artwork is internally called portal_b; the game
+            # renderer loads the stable paleness_portal atlas sprite name.
+            mapped=name.replace("/paleness_portal_b.png", "/paleness_portal.png")
+            dest=Path("src/main/resources")/mapped
         elif name=="blockbench/soul_tagger_D.bbmodel":
             dest=Path("art")/path
         else:raise SystemExit(f"Unexpected file in approved pack: {name}")
