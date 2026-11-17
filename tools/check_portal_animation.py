@@ -10,7 +10,7 @@ metadata=root/"paleness_portal.png.mcmeta"
 im=Image.open(texture).convert("RGB")
 assert im.width == 16 and im.height == 16*32, f"Expected 32 frames of 16x16, got {im.size}"
 meta=json.loads(metadata.read_text())["animation"]
-assert meta["frametime"] == 1 and meta["interpolate"] is True
+assert meta["frametime"] == 2 and meta["interpolate"] is True
 assert meta["frames"] == list(range(32)), "Invalid playback sequence"
 frames=[im.crop((0,i*16,16,(i+1)*16)) for i in range(32)]
 def average_change(a,b):
