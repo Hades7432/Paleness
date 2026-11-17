@@ -74,13 +74,13 @@ public final class VisualTestClient {
         level.setBlock(base.offset(-6,0,0),PaleMetalContent.PALE_ORE.get().defaultBlockState(),3);
         level.setBlock(base.offset(-2,0,0),PaleMetalContent.PALE_METAL_BLOCK.get().defaultBlockState(),3);
         for(int x=0;x<2;x++)for(int z=0;z<2;z++)
-            level.setBlock(base.offset(2+x,0,z),PaleContent.PALE_QUARTZ.get().defaultBlockState(),3);
+            level.setBlock(base.offset(2+x,0,z),PaleQuartzBlock.connectedState(level,base.offset(2+x,0,z)),3);
         BlockPos northwest=base.offset(-2,0,-8);
         for(int x=0;x<5;x++)for(int z=0;z<5;z++){
             if((x==0||x==4)&&(z==0||z==4))continue;
             if(x==0||x==4||z==0||z==4)
                 level.setBlock(northwest.offset(x,0,z),
-                    PaleContent.PALE_QUARTZ.get().defaultBlockState(),3);
+                    PaleQuartzBlock.connectedState(level,northwest.offset(x,0,z)),3);
         }
         PalePortalLogic.light(level,northwest.offset(0,0,2));
         player.setItemInHand(InteractionHand.MAIN_HAND,

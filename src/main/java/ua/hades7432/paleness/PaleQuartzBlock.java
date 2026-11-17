@@ -33,15 +33,16 @@ public final class PaleQuartzBlock extends Block {
             case WEST->WEST;case UP->UP;case DOWN->DOWN;
         };
     }
+    public static BlockState connectedState(BlockGetter level,BlockPos pos){
+        BlockState state=PaleContent.PALE_QUARTZ.get().defaultBlockState();
+        for(Direction side:Direction.values())
+            state=state.setValue(property(side),
+                level.getBlockState(pos.relative(side)).is(PaleContent.PALE_QUARTZ.get()));
+        return state;
+    }
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context){
-        BlockState state=defaultBlockState();
-        for(Direction side:Direction.values()){
-            state=state.setValue(property(side),
-                 context.getLevel().getBlockState(context.getClickedPos().relative(side))
-                     .is(PaleContent.PALE_QUARTZ.get()));
-        }
-        return state;
+        return connectedState(context.getLevel(),context.getClickedPos());
     }
     @Override
     protected BlockState updateShape(BlockState state,Direction side,BlockState neighbor,

@@ -16,7 +16,7 @@ public final class PaleAlloyItem extends Item {
         var pos=context.getClickedPos();
         if(!level.getBlockState(pos).is(Blocks.QUARTZ_BLOCK))return InteractionResult.PASS;
         if(!level.isClientSide){
-            level.setBlock(pos,PaleContent.PALE_QUARTZ.get().defaultBlockState(),3);
+            level.setBlock(pos,PaleQuartzBlock.connectedState(level,pos),3);
             level.playSound(null,pos,SoundEvents.ANVIL_USE,SoundSource.BLOCKS,0.35f,1.6f);
             var player=context.getPlayer();
             if(player==null || !player.getAbilities().instabuild)
