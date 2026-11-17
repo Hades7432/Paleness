@@ -12,3 +12,7 @@
 - Back up existing worlds: removing registered blocks/items can leave old block IDs unmapped.
 
 Development branch: feature/paleness-0.6-souls-alloy. NeoForge 21.1 / Minecraft 1.21.1.
+
+- Soul Tagger now performs a 16-block line-of-sight raycast when used in the air; point-blank right-click remains supported.
+- GameTest additionally verifies that marked mob death actually drops exactly one Pale Soul.
+- Visual QA screenshot timing tightened to finish seven captures before runtime shuts down.

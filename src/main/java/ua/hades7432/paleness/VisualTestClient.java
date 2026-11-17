@@ -34,17 +34,17 @@ public final class VisualTestClient {
             s.execute(()->prepare(s,uuid));
         }
         if(!prepared)return;
-        if(ticks==34)capture(mc,"paleness-01-ore-metal-gallery.png");
-        if(ticks==38)teleport(mc,-6,3,12);
-        if(ticks==43)capture(mc,"paleness-02-pale-quartz-connected.png");
-        if(ticks==48)teleport(mc,2,4,12);
-        if(ticks==53)capture(mc,"paleness-03-pale-quartz-closeup.png");
-        if(ticks==58)teleport(mc,0,1,15);
-        if(ticks==64)capture(mc,"paleness-04-soul-tagger-in-hand.png");
-        if(ticks==66)teleport(mc,6,6,60);
-        if(ticks==73)capture(mc,"paleness-05-portal-b.png");
-        if(ticks==82)capture(mc,"paleness-06-portal-b-animation.png");
-        if(ticks==89)capture(mc,"paleness-07-soul-tagger-second-view.png");
+        if(ticks==31)capture(mc,"paleness-01-ore-metal-gallery.png");
+        if(ticks==35)teleport(mc,-6,3,12);
+        if(ticks==41)capture(mc,"paleness-02-pale-quartz-connected.png");
+        if(ticks==44)teleport(mc,2,4,12);
+        if(ticks==50)capture(mc,"paleness-03-pale-quartz-closeup.png");
+        if(ticks==52)teleport(mc,0,1,15);
+        if(ticks==58)capture(mc,"paleness-04-soul-tagger-in-hand.png");
+        if(ticks==60)teleport(mc,6,6,60);
+        if(ticks==66)capture(mc,"paleness-05-portal-b.png");
+        if(ticks==73)capture(mc,"paleness-06-portal-b-animation.png");
+        if(ticks==80)capture(mc,"paleness-07-soul-tagger-second-view.png");
     }
     private static void capture(Minecraft mc,String name){
         Screenshot.grab(mc.gameDirectory,name,mc.getMainRenderTarget(),msg->{});

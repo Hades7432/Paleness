@@ -98,6 +98,23 @@ public final class PalenessGameTests {
         h.succeed();
     }
 
+
+    @GameTest(template="empty",timeoutTicks=150)
+    public static void verifyMarkedMobDropsSoul(GameTestHelper h){
+        ServerLevel level=h.getLevel();
+        var pig=h.spawn(EntityType.PIG,new BlockPos(4,2,4));
+        SoulTaggerItem.mark(pig);
+        var pos=pig.blockPosition();
+        pig.hurt(level.damageSources().genericKill(),10000f);
+        h.runAfterDelay(2,()->{
+            var drops=level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                new net.minecraft.world.phys.AABB(pos).inflate(3),
+                item->item.getItem().is(PaleContent.PALE_SOUL.get()));
+            h.assertTrue(drops.size()==1,"A marked mob must drop exactly one Pale Soul");
+            h.succeed();
+        });
+    }
+
     @GameTest(template="empty",timeoutTicks=200)
     public static void verifyHorizontalPortal(GameTestHelper h){
         ServerLevel level=h.getLevel();
