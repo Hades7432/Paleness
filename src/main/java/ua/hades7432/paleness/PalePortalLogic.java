@@ -34,7 +34,7 @@ public final class PalePortalLogic {
             if((x==0||x==4)&&(z==0||z==4))continue; // no corners needed
             var state=level.getBlockState(at(northwest,x,z));
             if(x==0||x==4||z==0||z==4){
-                if(!state.is(PaleContent.SUPER_QUARTZ.get()))return false;
+                if(!state.is(PaleContent.PALE_QUARTZ.get()))return false;
             }else if(!state.isAir()&&!state.is(PaleContent.PORTAL.get()))return false;
         }
         return true;
@@ -45,6 +45,11 @@ public final class PalePortalLogic {
             if(frame(level,northwest))return northwest.offset(2,0,2);
         }
         return null;
+    }
+    public static boolean canLight(Level level,BlockPos clickedFrame){
+        for(int x=0;x<5;x++)for(int z=0;z<5;z++)
+            if(frame(level,clickedFrame.offset(-x,0,-z)))return true;
+        return false;
     }
     public static boolean light(Level level,BlockPos clickedFrame){
         if(level.isClientSide)return false;
@@ -99,7 +104,7 @@ public final class PalePortalLogic {
             if(level.getBlockState(p.below()).isAir())
                 level.setBlock(p.below(),Blocks.STONE.defaultBlockState(),3);
             if(x==0||x==4||z==0||z==4)
-                level.setBlock(p,PaleContent.SUPER_QUARTZ.get().defaultBlockState(),3);
+                level.setBlock(p,PaleContent.PALE_QUARTZ.get().defaultBlockState(),3);
         }
         for(int x=1;x<=3;x++)for(int z=1;z<=3;z++)
             level.setBlock(at(northwest,x,z),PaleContent.PORTAL.get().defaultBlockState(),3);

@@ -32,10 +32,12 @@ public final class PalenessValues {
     }
     public static int calculate(ItemStack stack) {
         if (stack.isEmpty()) return 0;
-        if (stack.is(PaleContent.SUPER_CRYSTAL.get())) return 2000;
-        if (stack.is(PaleContent.SUPER_QUARTZ_ITEM.get())) return 2001;
-        if (stack.is(net.minecraft.world.item.Items.QUARTZ_BLOCK))
-            return baseQuartz() + stack.getOrDefault(PaleContent.INFUSED.get(),0);
+        if(stack.is(PaleContent.PALE_QUARTZ_ITEM.get()))return 1800;
+        if(stack.is(PaleContent.PALE_SOUL.get()))return 2000;
+        if(stack.is(PaleContent.PALE_ALLOY.get()))return 1100;
+        if(stack.is(PaleContent.PALE_IGNITER.get()))return 2000;
+        if(stack.is(net.minecraft.world.item.Items.QUARTZ_BLOCK))
+            return baseQuartz();
         ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         // The ONLY negative family: sculk blocks and related items.
         if (id.getNamespace().equals("minecraft") && (id.getPath().startsWith("sculk") || id.getPath().equals("calibrated_sculk_sensor")))
