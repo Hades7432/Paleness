@@ -11,13 +11,12 @@ shots=root/"screenshots"
 shots.mkdir(parents=True,exist_ok=True)
 expected=[
   "paleness-01-ore-metal-gallery.png",
-  "paleness-02-ore-closeup.png",
-  "paleness-03-metal-closeup.png",
-  "paleness-04-infuser-idle.png",
-  "paleness-05-infuser-active.png",
-  "paleness-06-infuser-gui.png",
-  "paleness-07-horizontal-portal.png",
-  "paleness-08-portal-after-animation.png"
+  "paleness-02-pale-quartz-connected.png",
+  "paleness-03-pale-quartz-closeup.png",
+  "paleness-04-soul-tagger-in-hand.png",
+  "paleness-05-portal-b.png",
+  "paleness-06-portal-b-animation.png",
+  "paleness-07-soul-tagger-second-view.png"
 ]
 log=(root/"logs/latest.log")
 lines=log.read_text(errors="replace").splitlines() if log.exists() else []

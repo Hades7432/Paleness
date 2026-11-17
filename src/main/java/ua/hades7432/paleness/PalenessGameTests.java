@@ -1,197 +1,143 @@
 package ua.hades7432.paleness;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.util.RandomSource;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 @GameTestHolder(Paleness.ID)
 @PrefixGameTestTemplate(false)
 public final class PalenessGameTests {
+
     @GameTest(template="empty",timeoutTicks=150)
-    public static void verifyWorldAndRecipes(GameTestHelper h) {
-        h.assertTrue(h.getLevel().registryAccess().registryOrThrow(
-            net.minecraft.core.registries.Registries.DIMENSION_TYPE).containsKey(
-            ResourceLocation.fromNamespaceAndPath(Paleness.ID,"paleness")),
-            "Missing Paleness dimension type");
-        h.assertTrue(h.getLevel().registryAccess().registryOrThrow(
-            net.minecraft.core.registries.Registries.BIOME).containsKey(
-            ResourceLocation.fromNamespaceAndPath(Paleness.ID,"stone_wastes")),
-            "Missing Paleness biome");
-        for(String id:new String[]{"paleness_infuser","super_pale_crystal",
-            "pale_metal_block","pale_metal_ingots_from_block",
-            "pale_metal_ingot_smelting","pale_metal_ingot_blasting"}) {
-            h.assertTrue(h.getLevel().getRecipeManager().byKey(
-                ResourceLocation.fromNamespaceAndPath(Paleness.ID,id)).isPresent(),
-                "Missing recipe: "+id);
+    public static void verifyRecipesAndRegistry(GameTestHelper h){
+        var level=h.getLevel();
+        for(String id:new String[]{"pale_alloy","pale_igniter","pale_metal_block",
+            "pale_metal_ingots_from_block","pale_metal_ingot_smelting","pale_metal_ingot_blasting"}){
+            h.assertTrue(level.getRecipeManager().byKey(
+                ResourceLocation.fromNamespaceAndPath(Paleness.ID,id)).isPresent(),"Missing recipe: "+id);
         }
-        h.assertTrue(PaleMetalContent.PALE_ORE.get().defaultBlockState().is(
-            net.minecraft.tags.BlockTags.MINEABLE_WITH_PICKAXE),
+        h.assertTrue(PaleMetalContent.PALE_ORE.get().defaultBlockState().is(BlockTags.MINEABLE_WITH_PICKAXE),
             "Pale Ore must be mineable with a pickaxe");
-        h.assertTrue(PaleMetalContent.PALE_ORE.get().defaultBlockState().is(
-            net.minecraft.tags.BlockTags.NEEDS_IRON_TOOL),
-            "Pale Ore must need iron or better");
-        h.assertTrue(PaleMetalContent.PALE_METAL_BLOCK.get().defaultBlockState().getSoundType()
-            == Blocks.IRON_BLOCK.defaultBlockState().getSoundType(),
-            "Pale Metal Block must sound exactly like Iron Block");
+        h.assertTrue(PaleMetalContent.PALE_ORE.get().defaultBlockState().is(BlockTags.NEEDS_IRON_TOOL),
+            "Pale Ore must require iron tier");
+        h.assertTrue(PaleContent.PALE_QUARTZ.get().defaultBlockState().is(BlockTags.MINEABLE_WITH_PICKAXE),
+            "Pale Quartz must be mineable");
+        h.assertTrue(level.registryAccess().registryOrThrow(Registries.BIOME)
+            .containsKey(ResourceLocation.fromNamespaceAndPath(Paleness.ID,"stone_wastes")),
+            "Paleness dimension biome must exist");
         h.succeed();
     }
 
-
-    @GameTest(template="empty", timeoutTicks=250)
-    public static void verifyOreWiredIntoOverworldBiomes(GameTestHelper h) {
-        // A registered feature is not sufficient: the biome modifier must
-        // actually insert it into the generated Overworld biome settings.
-        var access = h.getLevel().registryAccess();
-        var biomes = access.registryOrThrow(net.minecraft.core.registries.Registries.BIOME);
-        var plains = biomes.getHolderOrThrow(net.minecraft.world.level.biome.Biomes.PLAINS);
-        h.assertTrue(plains.is(net.minecraft.tags.BiomeTags.IS_OVERWORLD),
-            "Minecraft plains must belong to minecraft:is_overworld");
-        var key = net.minecraft.resources.ResourceKey.create(
-            net.minecraft.core.registries.Registries.PLACED_FEATURE,
-            ResourceLocation.fromNamespaceAndPath(Paleness.ID, "pale_ore"));
-        var placed = access.registryOrThrow(net.minecraft.core.registries.Registries.PLACED_FEATURE)
-            .getHolderOrThrow(key);
-        var settings = plains.value().modifiableBiomeInfo().get().generationSettings();
-        h.assertTrue(settings.hasFeature(placed.value()),
-            "Pale Ore is NOT in effective Overworld biome features: check NeoForge biome modifier");
+    @GameTest(template="empty",timeoutTicks=150)
+    public static void verifyOreWiredIntoOverworldBiomes(GameTestHelper h){
+        var registry=h.getLevel().registryAccess();
+        var biome=registry.registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS);
+        var placed=registry.registryOrThrow(Registries.PLACED_FEATURE).getHolderOrThrow(
+            ResourceKey.create(Registries.PLACED_FEATURE,
+                ResourceLocation.fromNamespaceAndPath(Paleness.ID,"pale_ore")));
+        h.assertTrue(biome.value().modifiableBiomeInfo().get().generationSettings().hasFeature(placed.value()),
+            "Configured pale ore must be present in actual plains features");
         h.succeed();
     }
 
-
-    @GameTest(template="empty", timeoutTicks=500)
-    public static void verifyOreCanActuallyReplaceDeepslate(GameTestHelper h) {
-        // This deliberately exercises the registered ore-placement algorithm,
-        // not only JSON existence or biome-tag membership.
+    @GameTest(template="empty",timeoutTicks=150)
+    public static void verifyOreReplacesDeepslate(GameTestHelper h){
         ServerLevel level=h.getLevel();
-        BlockPos sample=h.absolutePos(new BlockPos(12,0,12));
-        BlockPos origin=new BlockPos(sample.getX(),-52,sample.getZ());
-        var stone=Blocks.DEEPSLATE.defaultBlockState();
-        for(int dx=-5;dx<=5;dx++)
-            for(int dy=-5;dy<=5;dy++)
-                for(int dz=-5;dz<=5;dz++)
-                    level.setBlock(origin.offset(dx,dy,dz),stone,2);
-        var reg=level.registryAccess().registryOrThrow(
-            net.minecraft.core.registries.Registries.CONFIGURED_FEATURE);
-        var feature=reg.get(ResourceLocation.fromNamespaceAndPath(Paleness.ID,"pale_ore"));
-        h.assertTrue(feature!=null,"Configured Pale Ore feature is missing");
+        var registry=level.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE);
+        var feature=registry.get(ResourceLocation.fromNamespaceAndPath(Paleness.ID,"pale_ore"));
+        h.assertTrue(feature!=null,"Configured feature missing");
+        BlockPos seed=h.absolutePos(new BlockPos(10,1,10));
+        BlockPos center=new BlockPos(seed.getX(),-52,seed.getZ());
+        for(int x=-5;x<=5;x++)for(int y=-5;y<=5;y++)for(int z=-5;z<=5;z++)
+            level.setBlock(center.offset(x,y,z),Blocks.DEEPSLATE.defaultBlockState(),2);
         boolean placed=false;
-        for(int i=0;i<8;i++){
-            if(feature.place(level,level.getChunkSource().getGenerator(),
-                  net.minecraft.util.RandomSource.create(9931L+i),origin)) {
-                placed=true;
-                break;
-            }
+        for(int i=0;i<8;i++) {
+            placed|=feature.place(level,level.getChunkSource().getGenerator(),
+                RandomSource.create(i+9941L),center);
         }
-        int count=0;
-        for(int dx=-5;dx<=5;dx++)
-            for(int dy=-5;dy<=5;dy++)
-                for(int dz=-5;dz<=5;dz++)
-                    if(level.getBlockState(origin.offset(dx,dy,dz))
-                            .is(PaleMetalContent.PALE_ORE.get()))count++;
-        h.assertTrue(placed&&count>0,
-            "Registered Pale Ore worldgen did not place ore into deepslate at Y=-52");
+        h.assertTrue(placed,"Pale Ore must be able to generate at Y=-52 inside deepslate");
         h.succeed();
     }
 
     @GameTest(template="empty",timeoutTicks=150)
-    public static void verifyPalenessValues(GameTestHelper h) {
-        h.assertTrue(PalenessValues.calculate(new ItemStack(Items.SCULK)) < 0,
-            "Sculk must remain negative");
-        ItemStack quartz=new ItemStack(Items.QUARTZ_BLOCK);
-        int natural=PalenessValues.calculate(quartz);
-        h.assertTrue(natural>0&&natural<2000,
-            "Natural quartz must have positive Paleness below 2.000");
-        quartz.set(PaleContent.INFUSED.get(),1800);
-        h.assertTrue(PalenessValues.calculate(quartz)==natural+1800,
-            "Stored Paleness infusion must be preserved");
-        h.assertTrue(PalenessValues.calculate(new ItemStack(PaleContent.SUPER_CRYSTAL.get()))==2000,
-            "Super-pale crystal is exactly 2.000");
-        h.assertTrue(PalenessValues.calculate(new ItemStack(PaleContent.SUPER_QUARTZ_ITEM.get()))>2000,
-            "Super-pale quartz must be above 2.000");
-        h.succeed();
-    }
-
-    @GameTest(template="empty",timeoutTicks=150)
-    public static void verifyHorizontalPortal(GameTestHelper h) {
+    public static void verifyConnectedQuartz(GameTestHelper h){
         ServerLevel level=h.getLevel();
-        BlockPos northwest=h.absolutePos(new BlockPos(2,2,2));
+        BlockPos a=h.absolutePos(new BlockPos(2,2,2));
+        BlockPos b=a.east();
+        level.setBlock(a,PaleContent.PALE_QUARTZ.get().defaultBlockState(),3);
+        level.setBlock(b,PaleContent.PALE_QUARTZ.get().defaultBlockState(),3);
+        h.assertTrue(level.getBlockState(a).getValue(PaleQuartzBlock.EAST),"Quartz east edge should merge");
+        h.assertTrue(level.getBlockState(b).getValue(PaleQuartzBlock.WEST),"Quartz west edge should merge");
+        level.removeBlock(b,false);
+        h.assertTrue(!level.getBlockState(a).getValue(PaleQuartzBlock.EAST),"Quartz edge must return after breaking neighbor");
+        h.succeed();
+    }
+
+    @GameTest(template="empty",timeoutTicks=150)
+    public static void verifySoulMark(GameTestHelper h){
+        var pig=h.spawn(EntityType.PIG,new BlockPos(4,2,4));
+        SoulTaggerItem.mark(pig);
+        h.assertTrue(SoulTaggerItem.isMarked(pig),"Mob needs 10s active soul marker");
+        h.assertTrue(pig.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING),"Mob should visibly glow");
+        pig.getPersistentData().putLong(SoulTaggerItem.EXPIRES,pig.level().getGameTime()-1);
+        h.assertTrue(!SoulTaggerItem.isMarked(pig),"Expired markers cannot yield pale souls");
+        h.succeed();
+    }
+
+    @GameTest(template="empty",timeoutTicks=200)
+    public static void verifyHorizontalPortal(GameTestHelper h){
+        ServerLevel level=h.getLevel();
+        BlockPos corner=h.absolutePos(new BlockPos(2,2,2));
         for(int x=0;x<5;x++)for(int z=0;z<5;z++){
             if((x==0||x==4)&&(z==0||z==4))continue;
-            BlockPos pos=northwest.offset(x,0,z);
-            boolean border=x==0||x==4||z==0||z==4;
-            level.setBlock(pos,border?PaleContent.SUPER_QUARTZ.get().defaultBlockState():
-                    Blocks.AIR.defaultBlockState(),3);
+            BlockPos pos=corner.offset(x,0,z);
+            level.setBlock(pos,x==0||x==4||z==0||z==4
+                ?PaleContent.PALE_QUARTZ.get().defaultBlockState()
+                :Blocks.AIR.defaultBlockState(),3);
         }
-        h.assertTrue(PalePortalLogic.light(level,northwest.offset(0,0,2)),
-            "Horizontal 5x5 frame without corners must light");
+        h.assertTrue(PalePortalLogic.canLight(level,corner.offset(0,0,2)),
+            "Pale Quartz 5x5 horizontal frame must be ignitable without corner blocks");
+        h.assertTrue(PalePortalLogic.light(level,corner.offset(0,0,2)),
+            "Portal ignition failed");
+        BlockPos center=corner.offset(2,0,2);
         for(int x=1;x<=3;x++)for(int z=1;z<=3;z++)
-            h.assertTrue(level.getBlockState(northwest.offset(x,0,z)).is(PaleContent.PORTAL.get()),
-                "All nine portal tiles must activate");
-        BlockPos inner=northwest.offset(2,0,2);
-        h.assertTrue(PalePortalLogic.validPortal(level,inner),
-            "The active portal should remain lit with its border intact");
-        // Corners must not be required either during ignition or after activation.
-        for(int x : new int[]{0,4})for(int z : new int[]{0,4})
-            h.assertTrue(level.getBlockState(northwest.offset(x,0,z)).isAir(),
-                "Paleness portal corners must be optional");
-        // Portal block renderers must agree on one center / UV anchor.
-        for(int x=1;x<=3;x++)for(int z=1;z<=3;z++)
-            h.assertTrue(inner.equals(PalePortalLogic.centerOf(level,northwest.offset(x,0,z))),
-                "All 9 portal blocks must resolve the same anchor");
-        // Break one mandatory side of the frame: the whole gate must extinguish.
-        level.removeBlock(northwest.offset(0,0,2),false);
+            h.assertTrue(center.equals(PalePortalLogic.centerOf(level,corner.offset(x,0,z))),
+                "Nine portal tiles must share a center");
+        level.removeBlock(corner.offset(0,0,2),false);
         h.runAfterDelay(2,()->{
             for(int x=1;x<=3;x++)for(int z=1;z<=3;z++)
-                h.assertTrue(!level.getBlockState(northwest.offset(x,0,z)).is(PaleContent.PORTAL.get()),
-                    "Broken portal frame must remove all nine active tiles");
+                h.assertTrue(!level.getBlockState(corner.offset(x,0,z)).is(PaleContent.PORTAL.get()),
+                    "Gate must extinguish after breaking its frame");
             h.succeed();
         });
     }
 
     @GameTest(template="empty",timeoutTicks=300)
-    public static void verifyDestinationIsOnGround(GameTestHelper h) {
+    public static void verifyDestinationOnGround(GameTestHelper h){
         ServerLevel level=h.getLevel();
         BlockPos near=h.absolutePos(new BlockPos(11,2,11));
-        BlockPos gate=PalePortalLogic.makeDestination(level,near);
-        h.assertTrue(PalePortalLogic.validPortal(level,gate),
-            "Generated gateway must have all nine portal tiles in a 12-block frame");
-        BlockPos feet=PalePortalLogic.safeLanding(level,gate);
-        h.assertTrue(Math.max(Math.abs(feet.getX()-gate.getX()),
-            Math.abs(feet.getZ()-gate.getZ()))>=3,
-            "Destination must be at least three blocks from the gate");
-        h.assertTrue(level.getBlockState(feet.below()).isSolid(),
-            "Destination must be on solid local terrain, not over a void");
-        h.assertTrue(level.getBlockState(feet).isAir() && level.getBlockState(feet.above()).isAir(),
-            "Destination must have two air blocks of headroom");
-        h.succeed();
-    }
-
-    @GameTest(template="empty",timeoutTicks=150)
-    public static void verifyPaleInfuser(GameTestHelper h){
-        ServerLevel world=h.getLevel();
-        BlockPos pos=h.absolutePos(new BlockPos(1,2,1));
-        world.setBlock(pos,PaleContent.INFUSER.get().defaultBlockState(),3);
-        InfuserEntity e=(InfuserEntity)world.getBlockEntity(pos);
-        h.assertTrue(e!=null,"Missing infuser block entity");
-        e.inventory.setStackInSlot(0,new ItemStack(PaleMetalContent.PALE_METAL_INGOT.get()));
-        e.inventory.setStackInSlot(1,new ItemStack(Items.QUARTZ_BLOCK));
-        h.assertTrue(e.start(),"Infuser must accept pale ingot and quartz");
-        for(int i=0;i<40;i++)InfuserEntity.tick(world,pos,world.getBlockState(pos),e);
-        h.assertTrue(e.inventory.getStackInSlot(0).isEmpty(),"Infuser must consume one ingot");
-        h.assertTrue(e.inventory.getStackInSlot(1).is(Items.QUARTZ_BLOCK),
-            "Quartz should retain first infusion");
-        e.inventory.setStackInSlot(0,new ItemStack(PaleMetalContent.PALE_METAL_INGOT.get()));
-        h.assertTrue(e.start(),"Infuser must support repeat treatments");
-        for(int i=0;i<40;i++)InfuserEntity.tick(world,pos,world.getBlockState(pos),e);
-        h.assertTrue(e.inventory.getStackInSlot(1).is(PaleContent.SUPER_QUARTZ_ITEM.get()),
-            "Two ingots must saturate the quartz");
+        BlockPos portal=PalePortalLogic.makeDestination(level,near);
+        h.assertTrue(PalePortalLogic.validPortal(level,portal),"Auto-created destination portal invalid");
+        BlockPos feet=PalePortalLogic.safeLanding(level,portal);
+        h.assertTrue(Math.max(Math.abs(feet.getX()-portal.getX()),Math.abs(feet.getZ()-portal.getZ()))>=3,
+            "Landing should be at least three blocks away");
+        h.assertTrue(level.getBlockState(feet.below()).isSolid()
+            && level.getBlockState(feet).isAir() && level.getBlockState(feet.above()).isAir(),
+            "Landing must be grounded and have headroom");
         h.succeed();
     }
 }

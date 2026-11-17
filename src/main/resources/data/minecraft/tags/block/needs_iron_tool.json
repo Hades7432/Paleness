@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "paleness:paleness_infuser",
     "paleness:pale_ore"
   ]
 }
