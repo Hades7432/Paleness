@@ -16,3 +16,5 @@ Development branch: feature/paleness-0.6-souls-alloy. NeoForge 21.1 / Minecraft 
 - Soul Tagger now performs a 16-block line-of-sight raycast when used in the air; point-blank right-click remains supported.
 - GameTest additionally verifies that marked mob death actually drops exactly one Pale Soul.
 - Visual QA screenshot timing tightened to finish seven captures before runtime shuts down.
+
+- Improved first-person scale of Soul Tagger D without changing its approved Blockbench cuboids or PNG textures; moved portal Visual Test camera so it captures the 3x3 surface instead of the floor.

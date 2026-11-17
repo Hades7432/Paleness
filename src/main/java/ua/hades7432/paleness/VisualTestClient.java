@@ -41,9 +41,11 @@ public final class VisualTestClient {
         if(ticks==50)capture(mc,"paleness-03-pale-quartz-closeup.png");
         if(ticks==52)teleport(mc,0,1,15);
         if(ticks==58)capture(mc,"paleness-04-soul-tagger-in-hand.png");
-        if(ticks==60)teleport(mc,6,6,60);
+        if(ticks==64)teleportPortal(mc,0,0,5.2,180f,36f);
         if(ticks==66)capture(mc,"paleness-05-portal-b.png");
+        if(ticks==71)teleportPortal(mc,0,0,5.2,180f,36f);
         if(ticks==73)capture(mc,"paleness-06-portal-b-animation.png");
+        if(ticks==78)teleportPortal(mc,3,0,5.2,153f,32f);
         if(ticks==80)capture(mc,"paleness-07-soul-tagger-second-view.png");
     }
     private static void capture(Minecraft mc,String name){
@@ -58,6 +60,16 @@ public final class VisualTestClient {
             ServerPlayer player=server.getPlayerList().getPlayer(uuid);
             if(player!=null)player.connection.teleport(base.getX()+dx+.5,
                 base.getY()+2.3,base.getZ()+dz,180f,pitch);
+        });
+    }
+    private static void teleportPortal(Minecraft mc,int dx,int dz,double cameraHeight,float yaw,float pitch){
+        MinecraftServer server=mc.getSingleplayerServer();
+        UUID uuid=mc.player.getUUID();
+        if(base==null)return;
+        server.execute(()->{
+            ServerPlayer player=server.getPlayerList().getPlayer(uuid);
+            if(player!=null)player.connection.teleport(base.getX()+dx+0.5,
+                base.getY()+cameraHeight,base.getZ()+dz+0.5,yaw,pitch);
         });
     }
     private static void prepare(MinecraftServer server,UUID uuid){

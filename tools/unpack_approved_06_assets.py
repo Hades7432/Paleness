@@ -42,3 +42,15 @@ with zipfile.ZipFile(archive) as z:
             original.write_bytes(blob)
         count+=1
 print(f"[Paleness 0.6] Installed {count} byte-verified approved art files.")
+
+# Display-only adjustment, without touching the artist-approved Blockbench geometry
+# or the cryptographically locked source PNG/model archive.
+model_file=Path("src/main/resources/assets/paleness/models/item/soul_tagger.json")
+model=json.loads(model_file.read_text(encoding="utf-8"))
+display=model.setdefault("display",{})
+display["firstperson_righthand"]={
+    "rotation":[-8,157,0], "translation":[-4,1.5,0], "scale":[0.48,0.48,0.48]}
+display["firstperson_lefthand"]={
+    "rotation":[-8,203,0], "translation":[-4,1.5,0], "scale":[0.48,0.48,0.48]}
+model_file.write_text(json.dumps(model,indent=2)+"\\n",encoding="utf-8")
+print("[Paleness 0.6] First-person Tagger display normalized; model elements unchanged.")
